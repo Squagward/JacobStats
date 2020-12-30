@@ -1,11 +1,11 @@
-import numeral from "../../numeraljs/index";
-import { crops } from "../constants";
+import numeral from "../numeraljs/index";
+import { crops } from "./constants";
 
 export const charToString = char => char + "";
 
 export const uuidCleaner = uuid => uuid.replace(/-/g, "");
 
-export const resetCrops = () => {
+export const resetData = () => {
   for (let crop in crops) {
     crops[crop].count = 0;
     crops[crop].bestPos = 9999;
@@ -32,9 +32,11 @@ export const resetCrops = () => {
 
 export const withCommas = x => numeral(x).format("0,0");
 
+export const percent = (top, bottom) => numeral(top / bottom).format("0.000%");
+
 export const toPosition = x => {
-  const out = numeral(x).format("0o");
-  switch (out) {
+  const pos = numeral(x).format("0o");
+  switch (pos) {
     case "1st":
       return "§61st";
     case "2nd":
@@ -42,8 +44,6 @@ export const toPosition = x => {
     case "3rd":
       return "§c3rd";
     default:
-      return out;
+      return pos;
   }
 };
-
-export const percent = (top, bottom) => numeral(top / bottom).format("0.000%");

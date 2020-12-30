@@ -1,12 +1,10 @@
 import * as Elementa from "../Elementa/index";
-import { charToString, resetCrops } from "./utils/utils";
+import { charToString, resetData } from "./utils";
 import { theColor } from "./constants";
 
 const Color = Java.type("java.awt.Color");
 
-// TODO: refactor this maybe?
-
-export default class Homepage {
+export class Homepage {
   constructor() {
     this.gui = new Gui();
     this.text = "";
@@ -17,13 +15,24 @@ export default class Homepage {
 
     this.nameText = new Elementa.UIText(this.text)
       .setX(new Elementa.CenterConstraint())
-      .setY(new Elementa.AdditiveConstraint(new Elementa.SiblingConstraint(), (5).pixels()));
+      .setY(new Elementa.AdditiveConstraint(
+        new Elementa.SiblingConstraint(),
+        (5).pixels()
+      ));
 
     this.background = new Elementa.UIBlock(theColor)
       .setX((new Elementa.CenterConstraint()))
       .setY(new Elementa.CenterConstraint())
-      .setWidth(new Elementa.AdditiveConstraint(new Elementa.ChildBasedMaxSizeConstraint(), (10).pixels()))
-      .setHeight(new Elementa.AdditiveConstraint(new Elementa.ChildBasedSizeConstraint(5), (10).pixels()))
+
+      .setWidth(new Elementa.AdditiveConstraint(
+        new Elementa.ChildBasedMaxSizeConstraint(),
+        (10).pixels()
+      ))
+      .setHeight(new Elementa.AdditiveConstraint(
+        new Elementa.ChildBasedSizeConstraint(5),
+        (10).pixels()
+      ))
+
       .addChildren(this.title, this.nameText);
   }
 
@@ -37,20 +46,25 @@ export default class Homepage {
   close() {
     this.setText("");
     this.gui.close();
-    resetCrops();
+    resetData();
   }
 
   addLetter(char, keyCode) {
-    if (charToString(char).match(/\w/) && this.text.length < 16) this.text += charToString(char);
-    if (keyCode === 14) { // BACKSPACE
+    if (charToString(char).match(/\w/) && this.text.length < 16)
+      this.text += charToString(char);
+
+    if (keyCode === 14) // BACKSPACE
       this.text = this.text.substr(0, this.text.length - 1);
-    }
+
     this.nameText
       .setText(this.text)
       .setX(new Elementa.CenterConstraint());
     this.background
       .setX(new Elementa.CenterConstraint())
-      .setWidth(new Elementa.AdditiveConstraint(new Elementa.ChildBasedMaxSizeConstraint(), (10).pixels()));
+      .setWidth(new Elementa.AdditiveConstraint(
+        new Elementa.ChildBasedMaxSizeConstraint(),
+        (10).pixels()
+      ));
   }
 
   open() {
@@ -72,9 +86,11 @@ export class Tab extends Homepage {
   open() {
     super.open();
     this.resetGroup();
+
     this.background
       .clearChildren()
       .addChildren(...this.shownGroup);
+
     this.updateTabSize();
   }
 
@@ -116,13 +132,22 @@ export class Tab extends Homepage {
           .setY(new Elementa.SiblingConstraint(5));
       }
     });
+
     this.background
       .setX(new Elementa.CenterConstraint())
       .setY(new Elementa.CenterConstraint())
+
       .clearChildren()
       .addChildren(...this.shownGroup)
-      .setWidth(new Elementa.AdditiveConstraint(new Elementa.ChildBasedMaxSizeConstraint(), (10).pixels()))
-      .setHeight(new Elementa.AdditiveConstraint(new Elementa.ChildBasedSizeConstraint(5), (10).pixels()));
+
+      .setWidth(new Elementa.AdditiveConstraint(
+        new Elementa.ChildBasedMaxSizeConstraint(),
+        (10).pixels()
+      ))
+      .setHeight(new Elementa.AdditiveConstraint(
+        new Elementa.ChildBasedSizeConstraint(5),
+        (10).pixels()
+      ));
   }
 }
 
@@ -133,7 +158,10 @@ export class InfoBox extends Tab {
     this.background
       .setX((0).pixels())
       .setY((0).pixels())
-      .setColor(new Elementa.ConstantColorConstraint(new Color(0, 0, 0, .7)));
+
+      .setColor(new Elementa.ConstantColorConstraint(
+        new Color(0, 0, 0, .7)
+      ));
   }
 
   updateSize() {
@@ -152,9 +180,17 @@ export class InfoBox extends Tab {
     this.background
       .setX(Client.getMouseX().pixels())
       .setY(Client.getMouseY().pixels())
+
       .clearChildren()
       .addChildren(...this.shownGroup)
-      .setWidth(new Elementa.AdditiveConstraint(new Elementa.ChildBasedMaxSizeConstraint(), (10).pixels()))
-      .setHeight(new Elementa.AdditiveConstraint(new Elementa.ChildBasedSizeConstraint(5), (10).pixels()));
+
+      .setWidth(new Elementa.AdditiveConstraint(
+        new Elementa.ChildBasedMaxSizeConstraint(),
+        (10).pixels()
+      ))
+      .setHeight(new Elementa.AdditiveConstraint(
+        new Elementa.ChildBasedSizeConstraint(5),
+        (10).pixels()
+      ));
   }
 }

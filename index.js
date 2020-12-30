@@ -3,8 +3,8 @@
 
 import * as Elementa from "../Elementa/index";
 import request from "../requestV2/index";
-import Homepage, { Tab, InfoBox } from "./homepage";
-import { uuidCleaner, withCommas, toPosition, percent } from "./utils/utils";
+import { Homepage, Tab, InfoBox } from "./homepage";
+import { uuidCleaner, withCommas, toPosition, percent } from "./utils";
 import { crops, cropRegex, skillCurves, toNormal, loadMsgs, sbCal } from "./constants";
 
 const home = new Homepage();
@@ -38,19 +38,20 @@ const window = new Elementa.Window()
 register("renderOverlay", () => {
   if (home.gui.isOpen()) home.background.draw();
   if (tab.gui.isOpen()) {
-
     tab.background.draw();
+
     if (tab.background.children.length <= 2) return;
-    // TODO: refactor all of this since it pains my eyes but it works now
     try {
+      infoBox.updateSize();
+      if (tab.shownGroup.some(line => line.isHovered()))
+        infoBox.background.draw();
+
       if (tab.shownGroup[0].isHovered()) {
         infoBox.setLines(
           "Farming Stats",
           `Farming Level: ${crops.farmingLvl}`,
-          `Anita Bonus: +${crops.anitaBonus * 2}% Extra Double Drops`
+          `Anita Bonus: +${crops.anitaBonus * 2}% Double Drops`
         );
-        infoBox.updateSize();
-        infoBox.background.draw();
       }
       else if (tab.shownGroup[1].isHovered()) {
         infoBox.setLines(
@@ -63,8 +64,6 @@ register("renderOverlay", () => {
             : "Rank: Not claimed or below Bronze!",
           `Collection: ${withCommas(crops.recentCropData.collected)}`
         );
-        infoBox.updateSize();
-        infoBox.background.draw();
       }
       else if (tab.shownGroup[2].isHovered()) {
         infoBox.setLines(
@@ -72,8 +71,6 @@ register("renderOverlay", () => {
           `Best Rank: ${toPosition(crops.WHEAT.bestPos)}`,
           `Best Collection: ${withCommas(crops.WHEAT.bestCount)}`
         );
-        infoBox.updateSize();
-        infoBox.background.draw();
       }
       else if (tab.shownGroup[3].isHovered()) {
         infoBox.setLines(
@@ -81,8 +78,6 @@ register("renderOverlay", () => {
           `Best Rank: ${toPosition(crops.CARROT_ITEM.bestPos)}`,
           `Best Collection: ${withCommas(crops.CARROT_ITEM.bestCount)}`
         );
-        infoBox.updateSize();
-        infoBox.background.draw();
       }
       else if (tab.shownGroup[4].isHovered()) {
         infoBox.setLines(
@@ -90,8 +85,6 @@ register("renderOverlay", () => {
           `Best Rank: ${toPosition(crops.POTATO_ITEM.bestPos)}`,
           `Best Collection: ${withCommas(crops.POTATO_ITEM.bestCount)}`
         );
-        infoBox.updateSize();
-        infoBox.background.draw();
       }
       else if (tab.shownGroup[5].isHovered()) {
         infoBox.setLines(
@@ -99,8 +92,6 @@ register("renderOverlay", () => {
           `Best Rank: ${toPosition(crops.PUMPKIN.bestPos)}`,
           `Best Collection: ${withCommas(crops.PUMPKIN.bestCount)}`
         );
-        infoBox.updateSize();
-        infoBox.background.draw();
       }
       else if (tab.shownGroup[6].isHovered()) {
         infoBox.setLines(
@@ -108,8 +99,6 @@ register("renderOverlay", () => {
           `Best Rank: ${toPosition(crops.MELON.bestPos)}`,
           `Best Collection: ${withCommas(crops.MELON.bestCount)}`
         );
-        infoBox.updateSize();
-        infoBox.background.draw();
       }
       else if (tab.shownGroup[7].isHovered()) {
         infoBox.setLines(
@@ -117,8 +106,6 @@ register("renderOverlay", () => {
           `Best Rank: ${toPosition(crops.MUSHROOM_COLLECTION.bestPos)}`,
           `Best Collection: ${withCommas(crops.MUSHROOM_COLLECTION.bestCount)}`
         );
-        infoBox.updateSize();
-        infoBox.background.draw();
       }
       else if (tab.shownGroup[8].isHovered()) {
         infoBox.setLines(
@@ -126,8 +113,6 @@ register("renderOverlay", () => {
           `Best Rank: ${toPosition(crops.CACTUS.bestPos)}`,
           `Best Collection: ${withCommas(crops.CACTUS.bestCount)}`
         );
-        infoBox.updateSize();
-        infoBox.background.draw();
       }
       else if (tab.shownGroup[9].isHovered()) {
         infoBox.setLines(
@@ -135,8 +120,6 @@ register("renderOverlay", () => {
           `Best Rank: ${toPosition(crops.SUGAR_CANE.bestPos)}`,
           `Best Collection: ${withCommas(crops.SUGAR_CANE.bestCount)}`
         );
-        infoBox.updateSize();
-        infoBox.background.draw();
       }
       else if (tab.shownGroup[10].isHovered()) {
         infoBox.setLines(
@@ -144,8 +127,6 @@ register("renderOverlay", () => {
           `Best Rank: ${toPosition(crops.NETHER_STALK.bestPos)}`,
           `Best Collection: ${withCommas(crops.NETHER_STALK.bestCount)}`
         );
-        infoBox.updateSize();
-        infoBox.background.draw();
       }
       else if (tab.shownGroup[11].isHovered()) {
         infoBox.setLines(
@@ -153,8 +134,6 @@ register("renderOverlay", () => {
           `Best Rank: ${toPosition(crops.INK_SACK.bestPos)}`,
           `Best Collection: ${withCommas(crops.INK_SACK.bestCount)}`
         );
-        infoBox.updateSize();
-        infoBox.background.draw();
       }
       else if (tab.shownGroup[12].isHovered()) {
         infoBox.setLines(
@@ -164,8 +143,6 @@ register("renderOverlay", () => {
           `§cBronze§r: ${withCommas(crops.totalMedals.bronze)} - ${percent(crops.totalMedals.bronze, crops.total)}`,
           `None: ${withCommas(crops.totalMedals.none)} - ${percent(crops.totalMedals.none, crops.total)}`
         );
-        infoBox.updateSize();
-        infoBox.background.draw();
       }
     }
     catch (e) {
