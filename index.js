@@ -4,7 +4,7 @@
 import * as Elementa from "../Elementa/index";
 import request from "../requestV2/index";
 import Homepage, { Tab, InfoBox } from "./homepage";
-import { uuidCleaner, fancyNumber, toPosition, percentile, toPercent } from "./utils/utils";
+import { uuidCleaner, withCommas, toPosition, percent } from "./utils/utils";
 import { crops, cropRegex, skillCurves, toNormal, loadMsgs, sbCal } from "./constants";
 
 const home = new Homepage();
@@ -59,9 +59,9 @@ register("renderOverlay", () => {
           `${crops.recentDate.month} ${toPosition(crops.recentDate.day).removeFormatting()}, Year ${crops.recentDate.year}`,
           `Crop: ${toNormal[crops.recentCrop]}`,
           crops.recentCropData.claimed_position + 1
-            ? `Rank: ${toPosition(crops.recentCropData.claimed_position + 1)} §r/ ${fancyNumber(crops.recentCropData.claimed_participants)} (Top ${percentile(crops.recentCropData.claimed_position + 1, crops.recentCropData.claimed_participants)}%)`
+            ? `Rank: ${toPosition(crops.recentCropData.claimed_position + 1)} §r/ ${withCommas(crops.recentCropData.claimed_participants)} (Top ${percent(crops.recentCropData.claimed_position + 1, crops.recentCropData.claimed_participants)})`
             : "Rank: Not claimed or below Bronze!",
-          `Collection: ${fancyNumber(crops.recentCropData.collected)}`
+          `Collection: ${withCommas(crops.recentCropData.collected)}`
         );
         infoBox.updateSize();
         infoBox.background.draw();
@@ -70,7 +70,7 @@ register("renderOverlay", () => {
         infoBox.setLines(
           toNormal.WHEAT,
           `Best Rank: ${toPosition(crops.WHEAT.bestPos)}`,
-          `Best Collection: ${fancyNumber(crops.WHEAT.bestCount)}`
+          `Best Collection: ${withCommas(crops.WHEAT.bestCount)}`
         );
         infoBox.updateSize();
         infoBox.background.draw();
@@ -79,7 +79,7 @@ register("renderOverlay", () => {
         infoBox.setLines(
           toNormal.CARROT_ITEM,
           `Best Rank: ${toPosition(crops.CARROT_ITEM.bestPos)}`,
-          `Best Collection: ${fancyNumber(crops.CARROT_ITEM.bestCount)}`
+          `Best Collection: ${withCommas(crops.CARROT_ITEM.bestCount)}`
         );
         infoBox.updateSize();
         infoBox.background.draw();
@@ -88,7 +88,7 @@ register("renderOverlay", () => {
         infoBox.setLines(
           toNormal.POTATO_ITEM,
           `Best Rank: ${toPosition(crops.POTATO_ITEM.bestPos)}`,
-          `Best Collection: ${fancyNumber(crops.POTATO_ITEM.bestCount)}`
+          `Best Collection: ${withCommas(crops.POTATO_ITEM.bestCount)}`
         );
         infoBox.updateSize();
         infoBox.background.draw();
@@ -97,7 +97,7 @@ register("renderOverlay", () => {
         infoBox.setLines(
           toNormal.PUMPKIN,
           `Best Rank: ${toPosition(crops.PUMPKIN.bestPos)}`,
-          `Best Collection: ${fancyNumber(crops.PUMPKIN.bestCount)}`
+          `Best Collection: ${withCommas(crops.PUMPKIN.bestCount)}`
         );
         infoBox.updateSize();
         infoBox.background.draw();
@@ -106,7 +106,7 @@ register("renderOverlay", () => {
         infoBox.setLines(
           toNormal.MELON,
           `Best Rank: ${toPosition(crops.MELON.bestPos)}`,
-          `Best Collection: ${fancyNumber(crops.MELON.bestCount)}`
+          `Best Collection: ${withCommas(crops.MELON.bestCount)}`
         );
         infoBox.updateSize();
         infoBox.background.draw();
@@ -115,7 +115,7 @@ register("renderOverlay", () => {
         infoBox.setLines(
           toNormal.MUSHROOM_COLLECTION,
           `Best Rank: ${toPosition(crops.MUSHROOM_COLLECTION.bestPos)}`,
-          `Best Collection: ${fancyNumber(crops.MUSHROOM_COLLECTION.bestCount)}`
+          `Best Collection: ${withCommas(crops.MUSHROOM_COLLECTION.bestCount)}`
         );
         infoBox.updateSize();
         infoBox.background.draw();
@@ -124,7 +124,7 @@ register("renderOverlay", () => {
         infoBox.setLines(
           toNormal.CACTUS,
           `Best Rank: ${toPosition(crops.CACTUS.bestPos)}`,
-          `Best Collection: ${fancyNumber(crops.CACTUS.bestCount)}`
+          `Best Collection: ${withCommas(crops.CACTUS.bestCount)}`
         );
         infoBox.updateSize();
         infoBox.background.draw();
@@ -133,7 +133,7 @@ register("renderOverlay", () => {
         infoBox.setLines(
           toNormal.SUGAR_CANE,
           `Best Rank: ${toPosition(crops.SUGAR_CANE.bestPos)}`,
-          `Best Collection: ${fancyNumber(crops.SUGAR_CANE.bestCount)}`
+          `Best Collection: ${withCommas(crops.SUGAR_CANE.bestCount)}`
         );
         infoBox.updateSize();
         infoBox.background.draw();
@@ -142,7 +142,7 @@ register("renderOverlay", () => {
         infoBox.setLines(
           toNormal.NETHER_STALK,
           `Best Rank: ${toPosition(crops.NETHER_STALK.bestPos)}`,
-          `Best Collection: ${fancyNumber(crops.NETHER_STALK.bestCount)}`
+          `Best Collection: ${withCommas(crops.NETHER_STALK.bestCount)}`
         );
         infoBox.updateSize();
         infoBox.background.draw();
@@ -151,7 +151,7 @@ register("renderOverlay", () => {
         infoBox.setLines(
           toNormal.INK_SACK,
           `Best Rank: ${toPosition(crops.INK_SACK.bestPos)}`,
-          `Best Collection: ${fancyNumber(crops.INK_SACK.bestCount)}`
+          `Best Collection: ${withCommas(crops.INK_SACK.bestCount)}`
         );
         infoBox.updateSize();
         infoBox.background.draw();
@@ -159,10 +159,10 @@ register("renderOverlay", () => {
       else if (tab.shownGroup[12].isHovered()) {
         infoBox.setLines(
           "Total Medal Estimation:",
-          `§6Gold§r: ${fancyNumber(crops.totalMedals.gold)} - ${toPercent(crops.totalMedals.gold, crops.total)}%`,
-          `§7Silver§r: ${fancyNumber(crops.totalMedals.silver)} - ${toPercent(crops.totalMedals.silver, crops.total)}%`,
-          `§cBronze§r: ${fancyNumber(crops.totalMedals.bronze)} - ${toPercent(crops.totalMedals.bronze, crops.total)}%`,
-          `None: ${fancyNumber(crops.totalMedals.none)} - ${toPercent(crops.totalMedals.none, crops.total)}%`
+          `§6Gold§r: ${withCommas(crops.totalMedals.gold)} - ${percent(crops.totalMedals.gold, crops.total)}`,
+          `§7Silver§r: ${withCommas(crops.totalMedals.silver)} - ${percent(crops.totalMedals.silver, crops.total)}`,
+          `§cBronze§r: ${withCommas(crops.totalMedals.bronze)} - ${percent(crops.totalMedals.bronze, crops.total)}`,
+          `None: ${withCommas(crops.totalMedals.none)} - ${percent(crops.totalMedals.none, crops.total)}`
         );
         infoBox.updateSize();
         infoBox.background.draw();
@@ -299,7 +299,7 @@ register("guiKey", (char, keyCode) => {
                   `${toNormal.SUGAR_CANE}: §r${crops.SUGAR_CANE.count}`,
                   `${toNormal.NETHER_STALK}: §r${crops.NETHER_STALK.count}`,
                   `${toNormal.INK_SACK}: §r${crops.INK_SACK.count}`,
-                  `§9Total: §r${fancyNumber(crops.total)}` // if someone hits 1000 that would be nuts
+                  `§9Total: §r${withCommas(crops.total)}` // if someone hits 1000 that would be nuts
                 );
                 tab.updateTabSize();
 

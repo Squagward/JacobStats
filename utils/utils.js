@@ -1,3 +1,4 @@
+import numeral from "../../numeraljs/index";
 import { crops } from "../constants";
 
 export const charToString = char => char + "";
@@ -29,23 +30,20 @@ export const resetCrops = () => {
   };
 };
 
-// stolen from SlayerUtilities by Antonio32A & Marti157
-export const fancyNumber = x => x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+export const withCommas = x => numeral(x).format("0,0");
 
-/* 
-  really have no idea how this works. just copy pasted it in from here
-  https://community.shopify.com/c/Shopify-Design/Ordinal-Number-in-javascript-1st-2nd-3rd-4th/td-p/72156
- */
-export const toPosition = num => {
-  const suffix = ["th", "st", "nd", "rd"],
-    v = num % 100;
-  const placeVal = num + (suffix[(v - 20) % 10] || suffix[v] || suffix[0]);
-  if (placeVal === "1st") return `§6${placeVal}`;
-  else if (placeVal === "2nd") return `§7${placeVal}`;
-  else if (placeVal === "3rd") return `§c${placeVal}`;
-  return placeVal;
+export const toPosition = x => {
+  const out = numeral(x).format("0o");
+  switch (out) {
+    case "1st":
+      return "§61st";
+    case "2nd":
+      return "§72nd";
+    case "3rd":
+      return "§c3rd";
+    default:
+      return out;
+  }
 };
 
-export const percentile = (top, bottom) => Math.round((1 - (top / bottom)) * 100 * 1000) / 1000;
-
-export const toPercent = (top, bottom) => Math.round(top / bottom * 100 * 1000) / 1000;
+export const percent = (top, bottom) => numeral(top / bottom).format("0.000%");
