@@ -37,12 +37,15 @@ const window = new Elementa.Window()
 
 register("renderOverlay", () => {
   if (home.gui.isOpen()) home.background.draw();
+
   if (tab.gui.isOpen()) {
     tab.background.draw();
 
     if (tab.background.children.length <= 2) return;
+
     try {
       infoBox.updateSize();
+
       if (tab.shownGroup.some(line => line.isHovered()))
         infoBox.background.draw();
 
@@ -137,7 +140,7 @@ register("renderOverlay", () => {
       }
       else if (tab.shownGroup[12].isHovered()) {
         infoBox.setLines(
-          "Total Medal Estimation:",
+          "Total Medal §lEstimation§r:",
           `§6Gold§r: ${withCommas(crops.totalMedals.gold)} - ${percent(crops.totalMedals.gold, crops.total)}`,
           `§7Silver§r: ${withCommas(crops.totalMedals.silver)} - ${percent(crops.totalMedals.silver, crops.total)}`,
           `§cBronze§r: ${withCommas(crops.totalMedals.bronze)} - ${percent(crops.totalMedals.bronze, crops.total)}`,
@@ -214,6 +217,7 @@ register("guiKey", (char, keyCode) => {
                 const jacob = theProfile.jacob2;
                 const totalContests = Object.entries(jacob.contests);
 
+                crops.total = totalContests.length;
                 crops.maxFarmingLvl += jacob.perks.farming_level_cap ?? 0;
                 crops.anitaBonus = jacob.perks.double_drops ?? 0;
 
@@ -235,9 +239,7 @@ register("guiKey", (char, keyCode) => {
                   let sbDay = parseInt(cropRegex.exec(key)[3]);
                   let crop = cropRegex.exec(key)[4];
 
-                  if (!value.claimed_rewards) continue; // if you didn't get bronze, it doesn't track it
-
-                  if (!crops.recentDate.day) {
+                  if (!crops.recentDate.day && value.claimed_rewards) {
                     crops.recentDate.day = sbDay;
                     crops.recentDate.month = sbMon;
                     crops.recentDate.year = sbYear;
@@ -247,36 +249,35 @@ register("guiKey", (char, keyCode) => {
                   }
 
                   crops[crop].count++;
-                  crops.total++;
-
 
                   if (value.collected > crops[crop].bestCount) crops[crop].bestCount = value.collected;
                   if (value.claimed_position < crops[crop].bestPos) crops[crop].bestPos = value.claimed_position + 1;
 
-                  let percent = value.claimed_position / value.claimed_participants;
+                  let percent = (value.claimed_position + 1) / value.claimed_participants;
 
                   if (percent <= 0.05) crops.totalMedals.gold++;
                   else if (percent <= 0.25) crops.totalMedals.silver++;
                   else if (percent <= 0.6) crops.totalMedals.bronze++;
-                  else crops.totalMedals.none++;
                 }
+
+                crops.totalMedals.none = totalContests.length - (crops.totalMedals.gold + crops.totalMedals.silver + crops.totalMedals.bronze);
 
                 stepper.unregister();
 
                 tab.setLines(
                   `${username}'s Farming Stats`,
                   `§a§lContests Participated:`,
-                  `${toNormal.WHEAT}: §r${crops.WHEAT.count}`,
-                  `${toNormal.CARROT_ITEM}: §r${crops.CARROT_ITEM.count}`,
-                  `${toNormal.POTATO_ITEM}: §r${crops.POTATO_ITEM.count}`,
-                  `${toNormal.PUMPKIN}: §r${crops.PUMPKIN.count}`,
-                  `${toNormal.MELON}: §r${crops.MELON.count}`,
-                  `${toNormal.MUSHROOM_COLLECTION}: §r${crops.MUSHROOM_COLLECTION.count}`,
-                  `${toNormal.CACTUS}: §r${crops.CACTUS.count}`,
-                  `${toNormal.SUGAR_CANE}: §r${crops.SUGAR_CANE.count}`,
-                  `${toNormal.NETHER_STALK}: §r${crops.NETHER_STALK.count}`,
-                  `${toNormal.INK_SACK}: §r${crops.INK_SACK.count}`,
-                  `§9Total: §r${withCommas(crops.total)}` // if someone hits 1000 that would be nuts
+                  `${toNormal.WHEAT}§r: ${crops.WHEAT.count}`,
+                  `${toNormal.CARROT_ITEM}§r: ${crops.CARROT_ITEM.count}`,
+                  `${toNormal.POTATO_ITEM}§r: ${crops.POTATO_ITEM.count}`,
+                  `${toNormal.PUMPKIN}§r: ${crops.PUMPKIN.count}`,
+                  `${toNormal.MELON}§r: ${crops.MELON.count}`,
+                  `${toNormal.MUSHROOM_COLLECTION}§r: ${crops.MUSHROOM_COLLECTION.count}`,
+                  `${toNormal.CACTUS}§r: ${crops.CACTUS.count}`,
+                  `${toNormal.SUGAR_CANE}§r: ${crops.SUGAR_CANE.count}`,
+                  `${toNormal.NETHER_STALK}§r: ${crops.NETHER_STALK.count}`,
+                  `${toNormal.INK_SACK}§r: ${crops.INK_SACK.count}`,
+                  `§9Total§r: ${withCommas(crops.total)}` // if someone hits 1000 that would be nuts
                 );
                 tab.updateTabSize();
 
@@ -307,8 +308,9 @@ register("guiKey", (char, keyCode) => {
   }
 });
 
-register("command", () => {
+register("command", (name) => {
   home.open();
+  if (name) home.setText(name);
 }).setName("jacob");
 
 const stepper = register("step", (steps) => {
