@@ -1,9 +1,9 @@
 {
   "name": "JacobStats",
   "creator": "Squagward",
-  "description": "Adds a display to check a player's stats of Jacob farming events.",
+  "description": "Adds a display to check a player's stats of Jacob farming events. Type /jacob to get started.",
   "helpMessage": "\n§7§lHelp Info:\n/jacob to open the gui.\nThen type in a player's name and press enter.\nTo exit that screen, press ESC, left arrow, or delete.\nYou can hover over different lines to get more information!\n",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "entry": "index.js",
   "requires": [
     "requestV2",

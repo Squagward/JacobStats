@@ -111,7 +111,7 @@ export const sbCal = {
 
 export const theColor = new Color(.5, .5, .5, .7);
 
-export const cropRegex = /(\d+):(?:(\d{1,2})_(\d{1,2})):(\w+)/; // year=g1+1 month=g2 day=g3+1 g4=crop
+export const cropRegex = /(\d+):(?:(\d{1,2})_(\d{1,2})):(\w+)/; // year=g1+1 month=g2 day=g3 g4=crop
 
 export const skillCurves = [
   50,

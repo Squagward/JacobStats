@@ -1,5 +1,16 @@
+import request from "../requestV2/index";
 import numeral from "../numeraljs/index";
 import { crops } from "./constants";
+
+export const sendReq = url => request({
+  url,
+  json: true,
+  connectTimeout: 10000,
+  readTimeout: 10000,
+  headers: {
+    "User-Agent": "Mozilla/5.0 (ChatTriggers)"
+  }
+});
 
 export const charToString = char => char + "";
 

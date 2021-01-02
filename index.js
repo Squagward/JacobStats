@@ -2,9 +2,8 @@
 /// <reference lib="es2015" />
 
 import * as Elementa from "../Elementa/index";
-import request from "../requestV2/index";
 import { Homepage, Tab, InfoBox } from "./homepage";
-import { uuidCleaner, withCommas, toPosition, percent } from "./utils";
+import { sendReq, uuidCleaner, withCommas, toPosition, percent } from "./utils";
 import { crops, cropRegex, skillCurves, toNormal, loadMsgs, sbCal } from "./constants";
 
 const home = new Homepage();
@@ -38,122 +37,139 @@ const window = new Elementa.Window()
 register("renderOverlay", () => {
   if (home.gui.isOpen()) home.background.draw();
 
-  if (tab.gui.isOpen()) {
-    tab.background.draw();
+  if (!tab.gui.isOpen()) return;
 
-    if (tab.background.children.length <= 2) return;
+  tab.background.draw();
 
-    try {
-      infoBox.updateSize();
+  if (tab.background.children.length < 13) return;
 
-      if (tab.shownGroup.some(line => line.isHovered()))
-        infoBox.background.draw();
+  try {
+    infoBox.updateSize();
 
-      if (tab.shownGroup[0].isHovered()) {
-        infoBox.setLines(
-          "Farming Stats",
-          `Farming Level: ${crops.farmingLvl}`,
-          `Anita Bonus: +${crops.anitaBonus * 2}% Double Drops`
-        );
+    if (tab.shownGroup.some(line => line.isHovered())) infoBox.background.draw();
+
+    tab.shownGroup.forEach((line, i) => {
+      if (!line.isHovered()) return;
+      switch (i) {
+        case 0:
+          infoBox.setLines(
+            "Farming Stats",
+            `Farming Level: ${crops.farmingLvl}`,
+            `Anita Bonus: +${crops.anitaBonus * 2}% Double Drops`
+          );
+          break;
+
+        case 1:
+          infoBox.setLines(
+            "Most Recent Event Info",
+            "(Medaled & Claimed Rewards)",
+            `${crops.recentDate.month} ${toPosition(crops.recentDate.day).removeFormatting()}, Year ${crops.recentDate.year}`,
+            `Crop: ${toNormal[crops.recentCrop]}`,
+            crops.recentCropData.claimed_position + 1
+              ? `Rank: ${toPosition(crops.recentCropData.claimed_position + 1)} §r/ ${withCommas(crops.recentCropData.claimed_participants)} (Top ${percent(crops.recentCropData.claimed_position + 1, crops.recentCropData.claimed_participants)})`
+              : "Rank: Not claimed or below Bronze!",
+            `Collection: ${withCommas(crops.recentCropData.collected)}`
+          );
+          break;
+
+        case 2:
+          infoBox.setLines(
+            toNormal.WHEAT,
+            `Best Rank: ${toPosition(crops.WHEAT.bestPos)}`,
+            `Best Collection: ${withCommas(crops.WHEAT.bestCount)}`
+          );
+          break;
+
+        case 3:
+          infoBox.setLines(
+            toNormal.CARROT_ITEM,
+            `Best Rank: ${toPosition(crops.CARROT_ITEM.bestPos)}`,
+            `Best Collection: ${withCommas(crops.CARROT_ITEM.bestCount)}`
+          );
+          break;
+
+        case 4:
+          infoBox.setLines(
+            toNormal.POTATO_ITEM,
+            `Best Rank: ${toPosition(crops.POTATO_ITEM.bestPos)}`,
+            `Best Collection: ${withCommas(crops.POTATO_ITEM.bestCount)}`
+          );
+          break;
+
+        case 5:
+          infoBox.setLines(
+            toNormal.PUMPKIN,
+            `Best Rank: ${toPosition(crops.PUMPKIN.bestPos)}`,
+            `Best Collection: ${withCommas(crops.PUMPKIN.bestCount)}`
+          );
+          break;
+
+        case 6:
+          infoBox.setLines(
+            toNormal.MELON,
+            `Best Rank: ${toPosition(crops.MELON.bestPos)}`,
+            `Best Collection: ${withCommas(crops.MELON.bestCount)}`
+          );
+          break;
+
+        case 7:
+          infoBox.setLines(
+            toNormal.MUSHROOM_COLLECTION,
+            `Best Rank: ${toPosition(crops.MUSHROOM_COLLECTION.bestPos)}`,
+            `Best Collection: ${withCommas(crops.MUSHROOM_COLLECTION.bestCount)}`
+          );
+          break;
+
+        case 8:
+          infoBox.setLines(
+            toNormal.CACTUS,
+            `Best Rank: ${toPosition(crops.CACTUS.bestPos)}`,
+            `Best Collection: ${withCommas(crops.CACTUS.bestCount)}`
+          );
+          break;
+
+        case 9:
+          infoBox.setLines(
+            toNormal.SUGAR_CANE,
+            `Best Rank: ${toPosition(crops.SUGAR_CANE.bestPos)}`,
+            `Best Collection: ${withCommas(crops.SUGAR_CANE.bestCount)}`
+          );
+          break;
+
+        case 10:
+          infoBox.setLines(
+            toNormal.NETHER_STALK,
+            `Best Rank: ${toPosition(crops.NETHER_STALK.bestPos)}`,
+            `Best Collection: ${withCommas(crops.NETHER_STALK.bestCount)}`
+          );
+          break;
+
+        case 11:
+          infoBox.setLines(
+            toNormal.INK_SACK,
+            `Best Rank: ${toPosition(crops.INK_SACK.bestPos)}`,
+            `Best Collection: ${withCommas(crops.INK_SACK.bestCount)}`
+          );
+          break;
+
+        case 12:
+          infoBox.setLines(
+            "Total Medal §lEstimation§r:",
+            `§6Gold§r: ${withCommas(crops.totalMedals.gold)} - ${percent(crops.totalMedals.gold, crops.total)}`,
+            `§7Silver§r: ${withCommas(crops.totalMedals.silver)} - ${percent(crops.totalMedals.silver, crops.total)}`,
+            `§cBronze§r: ${withCommas(crops.totalMedals.bronze)} - ${percent(crops.totalMedals.bronze, crops.total)}`,
+            `None: ${withCommas(crops.totalMedals.none)} - ${percent(crops.totalMedals.none, crops.total)}`
+          );
+          break;
       }
-      else if (tab.shownGroup[1].isHovered()) {
-        infoBox.setLines(
-          "Most Recent Event Info",
-          "(Medaled & Claimed Rewards)",
-          `${crops.recentDate.month} ${toPosition(crops.recentDate.day).removeFormatting()}, Year ${crops.recentDate.year}`,
-          `Crop: ${toNormal[crops.recentCrop]}`,
-          crops.recentCropData.claimed_position + 1
-            ? `Rank: ${toPosition(crops.recentCropData.claimed_position + 1)} §r/ ${withCommas(crops.recentCropData.claimed_participants)} (Top ${percent(crops.recentCropData.claimed_position + 1, crops.recentCropData.claimed_participants)})`
-            : "Rank: Not claimed or below Bronze!",
-          `Collection: ${withCommas(crops.recentCropData.collected)}`
-        );
-      }
-      else if (tab.shownGroup[2].isHovered()) {
-        infoBox.setLines(
-          toNormal.WHEAT,
-          `Best Rank: ${toPosition(crops.WHEAT.bestPos)}`,
-          `Best Collection: ${withCommas(crops.WHEAT.bestCount)}`
-        );
-      }
-      else if (tab.shownGroup[3].isHovered()) {
-        infoBox.setLines(
-          toNormal.CARROT_ITEM,
-          `Best Rank: ${toPosition(crops.CARROT_ITEM.bestPos)}`,
-          `Best Collection: ${withCommas(crops.CARROT_ITEM.bestCount)}`
-        );
-      }
-      else if (tab.shownGroup[4].isHovered()) {
-        infoBox.setLines(
-          toNormal.POTATO_ITEM,
-          `Best Rank: ${toPosition(crops.POTATO_ITEM.bestPos)}`,
-          `Best Collection: ${withCommas(crops.POTATO_ITEM.bestCount)}`
-        );
-      }
-      else if (tab.shownGroup[5].isHovered()) {
-        infoBox.setLines(
-          toNormal.PUMPKIN,
-          `Best Rank: ${toPosition(crops.PUMPKIN.bestPos)}`,
-          `Best Collection: ${withCommas(crops.PUMPKIN.bestCount)}`
-        );
-      }
-      else if (tab.shownGroup[6].isHovered()) {
-        infoBox.setLines(
-          toNormal.MELON,
-          `Best Rank: ${toPosition(crops.MELON.bestPos)}`,
-          `Best Collection: ${withCommas(crops.MELON.bestCount)}`
-        );
-      }
-      else if (tab.shownGroup[7].isHovered()) {
-        infoBox.setLines(
-          toNormal.MUSHROOM_COLLECTION,
-          `Best Rank: ${toPosition(crops.MUSHROOM_COLLECTION.bestPos)}`,
-          `Best Collection: ${withCommas(crops.MUSHROOM_COLLECTION.bestCount)}`
-        );
-      }
-      else if (tab.shownGroup[8].isHovered()) {
-        infoBox.setLines(
-          toNormal.CACTUS,
-          `Best Rank: ${toPosition(crops.CACTUS.bestPos)}`,
-          `Best Collection: ${withCommas(crops.CACTUS.bestCount)}`
-        );
-      }
-      else if (tab.shownGroup[9].isHovered()) {
-        infoBox.setLines(
-          toNormal.SUGAR_CANE,
-          `Best Rank: ${toPosition(crops.SUGAR_CANE.bestPos)}`,
-          `Best Collection: ${withCommas(crops.SUGAR_CANE.bestCount)}`
-        );
-      }
-      else if (tab.shownGroup[10].isHovered()) {
-        infoBox.setLines(
-          toNormal.NETHER_STALK,
-          `Best Rank: ${toPosition(crops.NETHER_STALK.bestPos)}`,
-          `Best Collection: ${withCommas(crops.NETHER_STALK.bestCount)}`
-        );
-      }
-      else if (tab.shownGroup[11].isHovered()) {
-        infoBox.setLines(
-          toNormal.INK_SACK,
-          `Best Rank: ${toPosition(crops.INK_SACK.bestPos)}`,
-          `Best Collection: ${withCommas(crops.INK_SACK.bestCount)}`
-        );
-      }
-      else if (tab.shownGroup[12].isHovered()) {
-        infoBox.setLines(
-          "Total Medal §lEstimation§r:",
-          `§6Gold§r: ${withCommas(crops.totalMedals.gold)} - ${percent(crops.totalMedals.gold, crops.total)}`,
-          `§7Silver§r: ${withCommas(crops.totalMedals.silver)} - ${percent(crops.totalMedals.silver, crops.total)}`,
-          `§cBronze§r: ${withCommas(crops.totalMedals.bronze)} - ${percent(crops.totalMedals.bronze, crops.total)}`,
-          `None: ${withCommas(crops.totalMedals.none)} - ${percent(crops.totalMedals.none, crops.total)}`
-        );
-      }
-    }
-    catch (e) {
-      return;
-    };
+    });
   }
+  catch (e) {
+    return;
+  };
 });
 
+let cleanUUID, username;
 register("guiKey", (char, keyCode) => {
   if (!home.gui.isOpen() && !tab.gui.isOpen()) return; // if both tabs are closed, do nothing
 
@@ -172,148 +188,135 @@ register("guiKey", (char, keyCode) => {
     tab.setTitle(`Loading data for ${name}`);
     stepper.register();
 
-    request({
-      url: `https://api.ashcon.app/mojang/v2/user/${name}`,
-      json: true,
-      connectTimeout: 10000,
-      readTimeout: 10000,
-      headers: {
-        "User-Agent": "Mozilla/5.0 (ChatTriggers)"
-      }
-    })
+    let step = 0;
+    sendReq(`https://api.ashcon.app/mojang/v2/user/${name}`)
       .then(data => {
-        const username = data.username;
-        const cleanUUID = uuidCleaner(data.uuid);
+        username = data.username;
+        cleanUUID = uuidCleaner(data.uuid);
         tab.setTitle(`Loading data for ${username}`);
 
-        request({
-          url: `https://api.slothpixel.me/api/skyblock/profiles/${cleanUUID}`,
-          json: true,
-          connectTimeout: 10000,
-          readTimeout: 10000,
-          headers: {
-            "User-Agent": "Mozilla/5.0 (ChatTriggers)"
+        step++;
+        return sendReq(`https://api.slothpixel.me/api/skyblock/profiles/${cleanUUID}`);
+      })
+      .then(profiles => {
+        let latest;
+        const recent = Object.values(profiles)
+          .map(p => p.last_save)
+          .reduce((a, b) => a > b ? a : b);
+
+        for ([key, val] of Object.entries(profiles))
+          if (val.last_save === recent)
+            latest = key;
+
+        step++;
+        return sendReq(`https://api.slothpixel.me/api/skyblock/profile/${cleanUUID}/${latest}`);
+      })
+      .then(pData => {
+        const theProfile = pData.members[cleanUUID];
+        const jacob = theProfile.jacob2;
+        const totalContests = Object.entries(jacob.contests);
+
+        crops.total = totalContests.length;
+        crops.maxFarmingLvl += jacob.perks.farming_level_cap ?? 0;
+        crops.anitaBonus = jacob.perks.double_drops ?? 0;
+
+        for (let i = 0; i < skillCurves.length; i++) {
+          if (!theProfile.skills.farming) {
+            crops.farmingLvl = "§cAPI Disabled";
+            break;
           }
-        })
-          .then(profiles => {
-            let recent;
-            const profs = Object.entries(profiles);
-            const lastJoined = Math.max(...Object.values(profiles).map(p => p.last_save));
+          if (theProfile.skills.farming.xp < skillCurves[i] || crops.maxFarmingLvl < crops.farmingLvl + 1) break;
+          else crops.farmingLvl++;
+        }
 
-            profs.forEach(p => {
-              if (p[1].last_save === lastJoined) recent = p[0];
-            });
-            request({
-              url: `https://api.slothpixel.me/api/skyblock/profile/${cleanUUID}/${recent}`,
-              json: true,
-              connectTimeout: 10000,
-              readTimeout: 10000,
-              headers: {
-                "User-Agent": "Mozilla/5.0 (ChatTriggers)"
-              }
-            })
-              .then(pData => {
-                const theProfile = pData.members[cleanUUID];
-                const jacob = theProfile.jacob2;
-                const totalContests = Object.entries(jacob.contests);
+        for (let i = totalContests.length - 1; i >= 0; i--) {
+          let key = totalContests[i][0];
+          let value = totalContests[i][1];
 
-                crops.total = totalContests.length;
-                crops.maxFarmingLvl += jacob.perks.farming_level_cap ?? 0;
-                crops.anitaBonus = jacob.perks.double_drops ?? 0;
+          let sbYear = parseInt(cropRegex.exec(key)[1]) + 1;
+          let sbMon = sbCal.month[cropRegex.exec(key)[2]];
+          let sbDay = parseInt(cropRegex.exec(key)[3]);
+          let crop = cropRegex.exec(key)[4];
 
-                for (let i = 0; i < skillCurves.length; i++) {
-                  if (!theProfile.skills.farming) {
-                    crops.farmingLvl = "§cAPI Disabled";
-                    break;
-                  }
-                  if (theProfile.skills.farming.xp < skillCurves[i] || crops.maxFarmingLvl < crops.farmingLvl + 1) break;
-                  else crops.farmingLvl++;
-                }
+          if (!crops.recentDate.day && value.claimed_rewards) {
+            crops.recentDate.day = sbDay;
+            crops.recentDate.month = sbMon;
+            crops.recentDate.year = sbYear;
 
-                for (let i = totalContests.length - 1; i >= 0; i--) {
-                  let key = totalContests[i][0];
-                  let value = totalContests[i][1];
+            crops.recentCrop = crop;
+            crops.recentCropData = value;
+          }
 
-                  let sbYear = parseInt(cropRegex.exec(key)[1]) + 1;
-                  let sbMon = sbCal.month[cropRegex.exec(key)[2]];
-                  let sbDay = parseInt(cropRegex.exec(key)[3]);
-                  let crop = cropRegex.exec(key)[4];
+          crops[crop].count++;
 
-                  if (!crops.recentDate.day && value.claimed_rewards) {
-                    crops.recentDate.day = sbDay;
-                    crops.recentDate.month = sbMon;
-                    crops.recentDate.year = sbYear;
+          if (value.collected > crops[crop].bestCount) crops[crop].bestCount = value.collected;
+          if (value.claimed_position < crops[crop].bestPos) crops[crop].bestPos = value.claimed_position + 1;
 
-                    crops.recentCrop = crop;
-                    crops.recentCropData = value;
-                  }
+          let percent = value.claimed_position / value.claimed_participants;
 
-                  crops[crop].count++;
+          if (percent <= 0.05) crops.totalMedals.gold++;
+          else if (percent <= 0.25) crops.totalMedals.silver++;
+          else if (percent <= 0.6) crops.totalMedals.bronze++;
+        }
 
-                  if (value.collected > crops[crop].bestCount) crops[crop].bestCount = value.collected;
-                  if (value.claimed_position < crops[crop].bestPos) crops[crop].bestPos = value.claimed_position + 1;
+        const allMedals = crops.totalMedals.gold + crops.totalMedals.silver + crops.totalMedals.bronze;
+        crops.totalMedals.none = totalContests.length - allMedals;
 
-                  let percent = (value.claimed_position + 1) / value.claimed_participants;
+        stepper.unregister();
 
-                  if (percent <= 0.05) crops.totalMedals.gold++;
-                  else if (percent <= 0.25) crops.totalMedals.silver++;
-                  else if (percent <= 0.6) crops.totalMedals.bronze++;
-                }
+        tab.setLines(
+          `${username}'s Farming Stats`,
+          `§a§lContests Participated:`,
+          `${toNormal.WHEAT}§r: ${crops.WHEAT.count}`,
+          `${toNormal.CARROT_ITEM}§r: ${crops.CARROT_ITEM.count}`,
+          `${toNormal.POTATO_ITEM}§r: ${crops.POTATO_ITEM.count}`,
+          `${toNormal.PUMPKIN}§r: ${crops.PUMPKIN.count}`,
+          `${toNormal.MELON}§r: ${crops.MELON.count}`,
+          `${toNormal.MUSHROOM_COLLECTION}§r: ${crops.MUSHROOM_COLLECTION.count}`,
+          `${toNormal.CACTUS}§r: ${crops.CACTUS.count}`,
+          `${toNormal.SUGAR_CANE}§r: ${crops.SUGAR_CANE.count}`,
+          `${toNormal.NETHER_STALK}§r: ${crops.NETHER_STALK.count}`,
+          `${toNormal.INK_SACK}§r: ${crops.INK_SACK.count}`,
+          `§9Total§r: ${withCommas(crops.total)}` // if someone hits 1000 that would be nuts
+        );
+        tab.updateTabSize();
+      })
+      .catch(e => {
+        print(`\nJacobStats Error:\n${JSON.stringify(e)}\n`);
 
-                crops.totalMedals.none = totalContests.length - (crops.totalMedals.gold + crops.totalMedals.silver + crops.totalMedals.bronze);
+        stepper.unregister();
 
-                stepper.unregister();
-
-                tab.setLines(
-                  `${username}'s Farming Stats`,
-                  `§a§lContests Participated:`,
-                  `${toNormal.WHEAT}§r: ${crops.WHEAT.count}`,
-                  `${toNormal.CARROT_ITEM}§r: ${crops.CARROT_ITEM.count}`,
-                  `${toNormal.POTATO_ITEM}§r: ${crops.POTATO_ITEM.count}`,
-                  `${toNormal.PUMPKIN}§r: ${crops.PUMPKIN.count}`,
-                  `${toNormal.MELON}§r: ${crops.MELON.count}`,
-                  `${toNormal.MUSHROOM_COLLECTION}§r: ${crops.MUSHROOM_COLLECTION.count}`,
-                  `${toNormal.CACTUS}§r: ${crops.CACTUS.count}`,
-                  `${toNormal.SUGAR_CANE}§r: ${crops.SUGAR_CANE.count}`,
-                  `${toNormal.NETHER_STALK}§r: ${crops.NETHER_STALK.count}`,
-                  `${toNormal.INK_SACK}§r: ${crops.INK_SACK.count}`,
-                  `§9Total§r: ${withCommas(crops.total)}` // if someone hits 1000 that would be nuts
-                );
-                tab.updateTabSize();
-
-              }).catch(e => {
-                stepper.unregister();
-                tab.setHeader(
-                  `§cError loading Profile data for ${username}`,
-                  e.error ?? ""
-                );
-                tab.updateTabSize();
-              });
-          }).catch(e => {
-            stepper.unregister();
+        switch (step) {
+          case 0:
             tab.setHeader(
-              `§cError loading Profiles data for ${username}`,
+              `§cError loading Mojang data for ${name}`,
+              `${e.error} - ${e.reason}`
+            );
+            break;
+          case 1:
+            tab.setHeader(
+              `§cError loading all profiles data for ${username}`,
               e.message ?? ""
             );
-            tab.updateTabSize();
-          });
-      }).catch(e => {
-        stepper.unregister();
-        tab.setHeader(
-          `§cError loading Mojang data for ${name}`,
-          `${e.error} - ${e.reason}`
-        );
+            break;
+          case 2:
+            tab.setHeader(
+              `§cError loading current profile data for ${username}`,
+              e.error ?? ""
+            );
+            break;
+        }
         tab.updateTabSize();
       });
   }
 });
 
-register("command", (name) => {
+register("command", name => {
   home.open();
   if (name) home.setText(name);
 }).setName("jacob");
 
-const stepper = register("step", (steps) => {
+const stepper = register("step", steps => {
   tab.setText(loadMsgs[steps % loadMsgs.length]);
 }).setFps(5);
 
