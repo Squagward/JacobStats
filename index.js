@@ -4,7 +4,7 @@
 import * as Elementa from "../Elementa/index";
 import { Homepage, Tab, InfoBox } from "./homepage";
 import { sendReq, uuidCleaner, withCommas, toPosition, percent } from "./utils";
-import { crops, cropRegex, skillCurves, toNormal, loadMsgs, sbCal } from "./constants";
+import { data, cropRegex, skillCurves, toNormal, loadMsgs, sbCal } from "./constants";
 
 const home = new Homepage();
 const tab = new Tab();
@@ -54,8 +54,8 @@ register("renderOverlay", () => {
         case 0:
           infoBox.setLines(
             "Farming Stats",
-            `Farming Level: ${crops.farmingLvl}`,
-            `Anita Bonus: +${crops.anitaBonus * 2}% Double Drops`
+            `Farming Level: ${data.farmingLvl}`,
+            `Anita Bonus: +${data.anitaBonus * 2}% Double Drops`
           );
           break;
 
@@ -63,102 +63,102 @@ register("renderOverlay", () => {
           infoBox.setLines(
             "Most Recent Event Info",
             "(Medaled & Claimed Rewards)",
-            `${crops.recentDate.month} ${toPosition(crops.recentDate.day).removeFormatting()}, Year ${crops.recentDate.year}`,
-            `Crop: ${toNormal[crops.recentCrop]}`,
-            crops.recentCropData.claimed_position + 1
-              ? `Rank: ${toPosition(crops.recentCropData.claimed_position + 1)} §r/ ${withCommas(crops.recentCropData.claimed_participants)} (Top ${percent(crops.recentCropData.claimed_position + 1, crops.recentCropData.claimed_participants)})`
+            `${data.recentDate.month} ${toPosition(data.recentDate.day).removeFormatting()}, Year ${data.recentDate.year}`,
+            `Crop: ${toNormal[data.recentCrop]}`,
+            data.recentCropData.claimed_position + 1
+              ? `Rank: ${toPosition(data.recentCropData.claimed_position + 1)} §r/ ${withCommas(data.recentCropData.claimed_participants)} (Top ${percent(data.recentCropData.claimed_position + 1, data.recentCropData.claimed_participants)})`
               : "Rank: Not claimed or below Bronze!",
-            `Collection: ${withCommas(crops.recentCropData.collected)}`
+            `Collection: ${withCommas(data.recentCropData.collected)}`
           );
           break;
 
         case 2:
           infoBox.setLines(
             toNormal.WHEAT,
-            `Best Rank: ${toPosition(crops.WHEAT.bestPos)}`,
-            `Best Collection: ${withCommas(crops.WHEAT.bestCount)}`
+            `Best Rank: ${toPosition(data.WHEAT.bestPos)}`,
+            `Best Collection: ${withCommas(data.WHEAT.bestCount)}`
           );
           break;
 
         case 3:
           infoBox.setLines(
             toNormal.CARROT_ITEM,
-            `Best Rank: ${toPosition(crops.CARROT_ITEM.bestPos)}`,
-            `Best Collection: ${withCommas(crops.CARROT_ITEM.bestCount)}`
+            `Best Rank: ${toPosition(data.CARROT_ITEM.bestPos)}`,
+            `Best Collection: ${withCommas(data.CARROT_ITEM.bestCount)}`
           );
           break;
 
         case 4:
           infoBox.setLines(
             toNormal.POTATO_ITEM,
-            `Best Rank: ${toPosition(crops.POTATO_ITEM.bestPos)}`,
-            `Best Collection: ${withCommas(crops.POTATO_ITEM.bestCount)}`
+            `Best Rank: ${toPosition(data.POTATO_ITEM.bestPos)}`,
+            `Best Collection: ${withCommas(data.POTATO_ITEM.bestCount)}`
           );
           break;
 
         case 5:
           infoBox.setLines(
             toNormal.PUMPKIN,
-            `Best Rank: ${toPosition(crops.PUMPKIN.bestPos)}`,
-            `Best Collection: ${withCommas(crops.PUMPKIN.bestCount)}`
+            `Best Rank: ${toPosition(data.PUMPKIN.bestPos)}`,
+            `Best Collection: ${withCommas(data.PUMPKIN.bestCount)}`
           );
           break;
 
         case 6:
           infoBox.setLines(
             toNormal.MELON,
-            `Best Rank: ${toPosition(crops.MELON.bestPos)}`,
-            `Best Collection: ${withCommas(crops.MELON.bestCount)}`
+            `Best Rank: ${toPosition(data.MELON.bestPos)}`,
+            `Best Collection: ${withCommas(data.MELON.bestCount)}`
           );
           break;
 
         case 7:
           infoBox.setLines(
             toNormal.MUSHROOM_COLLECTION,
-            `Best Rank: ${toPosition(crops.MUSHROOM_COLLECTION.bestPos)}`,
-            `Best Collection: ${withCommas(crops.MUSHROOM_COLLECTION.bestCount)}`
+            `Best Rank: ${toPosition(data.MUSHROOM_COLLECTION.bestPos)}`,
+            `Best Collection: ${withCommas(data.MUSHROOM_COLLECTION.bestCount)}`
           );
           break;
 
         case 8:
           infoBox.setLines(
             toNormal.CACTUS,
-            `Best Rank: ${toPosition(crops.CACTUS.bestPos)}`,
-            `Best Collection: ${withCommas(crops.CACTUS.bestCount)}`
+            `Best Rank: ${toPosition(data.CACTUS.bestPos)}`,
+            `Best Collection: ${withCommas(data.CACTUS.bestCount)}`
           );
           break;
 
         case 9:
           infoBox.setLines(
             toNormal.SUGAR_CANE,
-            `Best Rank: ${toPosition(crops.SUGAR_CANE.bestPos)}`,
-            `Best Collection: ${withCommas(crops.SUGAR_CANE.bestCount)}`
+            `Best Rank: ${toPosition(data.SUGAR_CANE.bestPos)}`,
+            `Best Collection: ${withCommas(data.SUGAR_CANE.bestCount)}`
           );
           break;
 
         case 10:
           infoBox.setLines(
             toNormal.NETHER_STALK,
-            `Best Rank: ${toPosition(crops.NETHER_STALK.bestPos)}`,
-            `Best Collection: ${withCommas(crops.NETHER_STALK.bestCount)}`
+            `Best Rank: ${toPosition(data.NETHER_STALK.bestPos)}`,
+            `Best Collection: ${withCommas(data.NETHER_STALK.bestCount)}`
           );
           break;
 
         case 11:
           infoBox.setLines(
             toNormal.INK_SACK,
-            `Best Rank: ${toPosition(crops.INK_SACK.bestPos)}`,
-            `Best Collection: ${withCommas(crops.INK_SACK.bestCount)}`
+            `Best Rank: ${toPosition(data.INK_SACK.bestPos)}`,
+            `Best Collection: ${withCommas(data.INK_SACK.bestCount)}`
           );
           break;
 
         case 12:
           infoBox.setLines(
             "Total Medal §lEstimation§r:",
-            `§6Gold§r: ${withCommas(crops.totalMedals.gold)} - ${percent(crops.totalMedals.gold, crops.total)}`,
-            `§7Silver§r: ${withCommas(crops.totalMedals.silver)} - ${percent(crops.totalMedals.silver, crops.total)}`,
-            `§cBronze§r: ${withCommas(crops.totalMedals.bronze)} - ${percent(crops.totalMedals.bronze, crops.total)}`,
-            `None: ${withCommas(crops.totalMedals.none)} - ${percent(crops.totalMedals.none, crops.total)}`
+            `§6Gold§r: ${withCommas(data.totalMedals.gold)} - ${percent(data.totalMedals.gold, data.total)}`,
+            `§7Silver§r: ${withCommas(data.totalMedals.silver)} - ${percent(data.totalMedals.silver, data.total)}`,
+            `§cBronze§r: ${withCommas(data.totalMedals.bronze)} - ${percent(data.totalMedals.bronze, data.total)}`,
+            `None: ${withCommas(data.totalMedals.none)} - ${percent(data.totalMedals.none, data.total)}`
           );
           break;
       }
@@ -169,7 +169,7 @@ register("renderOverlay", () => {
   };
 });
 
-let cleanUUID, username;
+let cleanUUID, name;
 register("guiKey", (char, keyCode) => {
   if (!home.gui.isOpen() && !tab.gui.isOpen()) return; // if both tabs are closed, do nothing
 
@@ -181,19 +181,19 @@ register("guiKey", (char, keyCode) => {
   }
 
   if (keyCode === 28) { // ENTER
-    const name = home.text;
+    const unformName = home.text;
     home.close();
     tab.open();
 
-    tab.setTitle(`Loading data for ${name}`);
+    tab.setTitle(`Loading data for ${unformName}`);
     stepper.register();
 
     let step = 0;
-    sendReq(`https://api.ashcon.app/mojang/v2/user/${name}`)
-      .then(data => {
-        username = data.username;
-        cleanUUID = uuidCleaner(data.uuid);
-        tab.setTitle(`Loading data for ${username}`);
+    sendReq(`https://api.ashcon.app/mojang/v2/user/${unformName}`)
+      .then(({ uuid, username }) => {
+        name = username;
+        cleanUUID = uuidCleaner(uuid);
+        tab.setTitle(`Loading data for ${name}`);
 
         step++;
         return sendReq(`https://api.slothpixel.me/api/skyblock/profiles/${cleanUUID}`);
@@ -211,73 +211,80 @@ register("guiKey", (char, keyCode) => {
         step++;
         return sendReq(`https://api.slothpixel.me/api/skyblock/profile/${cleanUUID}/${latest}`);
       })
-      .then(pData => {
-        const theProfile = pData.members[cleanUUID];
-        const jacob = theProfile.jacob2;
-        const totalContests = Object.entries(jacob.contests);
+      .then(({ members }) => {
+        const theProfile = members[cleanUUID];
+        const { contests, perks } = theProfile.jacob2; // no need to do this but I just wanted to test out destructuring
+        const totalContests = Object.entries(contests);
 
-        crops.total = totalContests.length;
-        crops.maxFarmingLvl += jacob.perks.farming_level_cap ?? 0;
-        crops.anitaBonus = jacob.perks.double_drops ?? 0;
+        data.total = totalContests.length;
+        data.maxFarmingLvl += perks.farming_level_cap ?? 0;
+        data.anitaBonus = perks.double_drops ?? 0;
 
         for (let i = 0; i < skillCurves.length; i++) {
           if (!theProfile.skills.farming) {
-            crops.farmingLvl = "§cAPI Disabled";
+            data.farmingLvl = "§cAPI Disabled";
             break;
           }
-          if (theProfile.skills.farming.xp < skillCurves[i] || crops.maxFarmingLvl < crops.farmingLvl + 1) break;
-          else crops.farmingLvl++;
+          if (theProfile.skills.farming.xp < skillCurves[i] || data.maxFarmingLvl < data.farmingLvl + 1) break;
+          else data.farmingLvl++;
         }
 
         for (let i = totalContests.length - 1; i >= 0; i--) {
           let key = totalContests[i][0];
           let value = totalContests[i][1];
+          let { claimed_rewards: rewards,
+            claimed_participants: players,
+            claimed_position: pos,
+            collected
+          } = value;
 
           let sbYear = parseInt(cropRegex.exec(key)[1]) + 1;
-          let sbMon = sbCal.month[cropRegex.exec(key)[2]];
+          let sbMonth = sbCal[cropRegex.exec(key)[2]];
           let sbDay = parseInt(cropRegex.exec(key)[3]);
           let crop = cropRegex.exec(key)[4];
 
-          if (!crops.recentDate.day && value.claimed_rewards) {
-            crops.recentDate.day = sbDay;
-            crops.recentDate.month = sbMon;
-            crops.recentDate.year = sbYear;
+          if (!data.recentDate.day && rewards) {
+            data.recentDate = {
+              day: sbDay,
+              month: sbMonth,
+              year: sbYear
+            };
 
-            crops.recentCrop = crop;
-            crops.recentCropData = value;
+            data.recentCrop = crop;
+            data.recentCropData = value;
           }
 
-          crops[crop].count++;
+          data[crop].count++;
 
-          if (value.collected > crops[crop].bestCount) crops[crop].bestCount = value.collected;
-          if (value.claimed_position < crops[crop].bestPos) crops[crop].bestPos = value.claimed_position + 1;
+          if (collected > data[crop].bestCount) data[crop].bestCount = collected;
+          if (pos < data[crop].bestPos) data[crop].bestPos = pos + 1;
 
-          let percent = value.claimed_position / value.claimed_participants;
+          let percent = pos / players;
 
-          if (percent <= 0.05) crops.totalMedals.gold++;
-          else if (percent <= 0.25) crops.totalMedals.silver++;
-          else if (percent <= 0.6) crops.totalMedals.bronze++;
+          if (percent <= 0.05) data.totalMedals.gold++;
+          else if (percent <= 0.25) data.totalMedals.silver++;
+          else if (percent <= 0.6) data.totalMedals.bronze++;
         }
 
-        const allMedals = crops.totalMedals.gold + crops.totalMedals.silver + crops.totalMedals.bronze;
-        crops.totalMedals.none = totalContests.length - allMedals;
+        const allMedals = data.totalMedals.gold + data.totalMedals.silver + data.totalMedals.bronze;
+        data.totalMedals.none = totalContests.length - allMedals;
 
         stepper.unregister();
 
         tab.setLines(
-          `${username}'s Farming Stats`,
+          `${name}'s Farming Stats`,
           `§a§lContests Participated:`,
-          `${toNormal.WHEAT}§r: ${crops.WHEAT.count}`,
-          `${toNormal.CARROT_ITEM}§r: ${crops.CARROT_ITEM.count}`,
-          `${toNormal.POTATO_ITEM}§r: ${crops.POTATO_ITEM.count}`,
-          `${toNormal.PUMPKIN}§r: ${crops.PUMPKIN.count}`,
-          `${toNormal.MELON}§r: ${crops.MELON.count}`,
-          `${toNormal.MUSHROOM_COLLECTION}§r: ${crops.MUSHROOM_COLLECTION.count}`,
-          `${toNormal.CACTUS}§r: ${crops.CACTUS.count}`,
-          `${toNormal.SUGAR_CANE}§r: ${crops.SUGAR_CANE.count}`,
-          `${toNormal.NETHER_STALK}§r: ${crops.NETHER_STALK.count}`,
-          `${toNormal.INK_SACK}§r: ${crops.INK_SACK.count}`,
-          `§9Total§r: ${withCommas(crops.total)}` // if someone hits 1000 that would be nuts
+          `${toNormal.WHEAT}§r: ${data.WHEAT.count}`,
+          `${toNormal.CARROT_ITEM}§r: ${data.CARROT_ITEM.count}`,
+          `${toNormal.POTATO_ITEM}§r: ${data.POTATO_ITEM.count}`,
+          `${toNormal.PUMPKIN}§r: ${data.PUMPKIN.count}`,
+          `${toNormal.MELON}§r: ${data.MELON.count}`,
+          `${toNormal.MUSHROOM_COLLECTION}§r: ${data.MUSHROOM_COLLECTION.count}`,
+          `${toNormal.CACTUS}§r: ${data.CACTUS.count}`,
+          `${toNormal.SUGAR_CANE}§r: ${data.SUGAR_CANE.count}`,
+          `${toNormal.NETHER_STALK}§r: ${data.NETHER_STALK.count}`,
+          `${toNormal.INK_SACK}§r: ${data.INK_SACK.count}`,
+          `§9Total§r: ${withCommas(data.total)}` // if someone hits 1000 that would be nuts
         );
         tab.updateTabSize();
       })
@@ -289,23 +296,24 @@ register("guiKey", (char, keyCode) => {
         switch (step) {
           case 0:
             tab.setHeader(
-              `§cError loading Mojang data for ${name}`,
+              `§cError loading Mojang data for ${unformName}`,
               `${e.error} - ${e.reason}`
             );
             break;
           case 1:
             tab.setHeader(
-              `§cError loading all profiles data for ${username}`,
+              `§cError loading all profiles data for ${name}`,
               e.message ?? ""
             );
             break;
           case 2:
             tab.setHeader(
-              `§cError loading current profile data for ${username}`,
+              `§cError loading current profile data for ${name}`,
               e.error ?? ""
             );
             break;
         }
+
         tab.updateTabSize();
       });
   }

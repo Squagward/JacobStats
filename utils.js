@@ -1,6 +1,6 @@
 import request from "../requestV2/index";
 import numeral from "../numeraljs/index";
-import { crops } from "./constants";
+import { data } from "./constants";
 
 export const sendReq = url => request({
   url,
@@ -17,23 +17,23 @@ export const charToString = char => char + "";
 export const uuidCleaner = uuid => uuid.replace(/-/g, "");
 
 export const resetData = () => {
-  for (let crop in crops) {
-    crops[crop].count = 0;
-    crops[crop].bestPos = 9999;
-    crops[crop].bestCount = 0;
+  for (let crop in data) {
+    data[crop].count = 0;
+    data[crop].bestPos = 9999;
+    data[crop].bestCount = 0;
   }
 
-  crops.total = 0;
+  data.total = 0;
 
-  crops.maxFarmingLvl = 50;
-  crops.farmingLvl = 0;
-  crops.anitaBonus = 0;
+  data.maxFarmingLvl = 50;
+  data.farmingLvl = 0;
+  data.anitaBonus = 0;
 
-  crops.recentCrop = "";
-  crops.recentDate = {};
-  crops.recentCropData = {};
+  data.recentCrop = "";
+  data.recentDate = {};
+  data.recentCropData = {};
 
-  crops.totalMedals = {
+  data.totalMedals = {
     gold: 0,
     silver: 0,
     bronze: 0,

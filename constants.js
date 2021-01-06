@@ -1,6 +1,6 @@
 const Color = Java.type("java.awt.Color");
 
-export const crops = {
+export const data = {
   WHEAT: {
     count: 0,
     bestPos: 9999,
@@ -93,20 +93,18 @@ export const loadMsgs = [
 ];
 
 export const sbCal = {
-  month: {
-    1: "Early Spring",
-    2: "Spring",
-    3: "Late Spring",
-    4: "Early Summer",
-    5: "Summer",
-    6: "Late Summer",
-    7: "Early Autumn",
-    8: "Autumn",
-    9: "Late Autumn",
-    10: "Early Winter",
-    11: "Winter",
-    12: "Late Winter"
-  }
+  1: "Early Spring",
+  2: "Spring",
+  3: "Late Spring",
+  4: "Early Summer",
+  5: "Summer",
+  6: "Late Summer",
+  7: "Early Autumn",
+  8: "Autumn",
+  9: "Late Autumn",
+  10: "Early Winter",
+  11: "Winter",
+  12: "Late Winter"
 };
 
 export const theColor = new Color(.5, .5, .5, .7);
