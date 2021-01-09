@@ -57,6 +57,7 @@ export const data = {
   maxFarmingLvl: 50,
   farmingLvl: 0,
   anitaBonus: 0,
+  uniqueGolds: 0,
 
   recentDate: {},
   recentCrop: "",

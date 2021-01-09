@@ -28,6 +28,7 @@ export const resetData = () => {
   data.maxFarmingLvl = 50;
   data.farmingLvl = 0;
   data.anitaBonus = 0;
+  data.uniqueGolds = 0;
 
   data.recentCrop = "";
   data.recentDate = {};

@@ -55,7 +55,8 @@ register("renderOverlay", () => {
           infoBox.setLines(
             "Farming Stats",
             `Farming Level: ${data.farmingLvl}`,
-            `Anita Bonus: +${data.anitaBonus * 2}% Double Drops`
+            `Anita Bonus: +${data.anitaBonus * 2}% Double Drops`,
+            `Unique Gold Medals: ${data.uniqueGolds}`
           );
           break;
 
@@ -219,6 +220,7 @@ register("guiKey", (char, keyCode) => {
         data.total = totalContests.length;
         data.maxFarmingLvl += perks.farming_level_cap ?? 0;
         data.anitaBonus = perks.double_drops ?? 0;
+        data.uniqueGolds = theProfile.jacob2.unique_golds2.length;
 
         for (let i = 0; i < skillCurves.length; i++) {
           if (!theProfile.skills.farming) {
@@ -238,9 +240,9 @@ register("guiKey", (char, keyCode) => {
             collected
           } = value;
 
-          let sbYear = parseInt(cropRegex.exec(key)[1]) + 1;
+          let sbYear = +cropRegex.exec(key)[1] + 1;
           let sbMonth = sbCal[cropRegex.exec(key)[2]];
-          let sbDay = parseInt(cropRegex.exec(key)[3]);
+          let sbDay = +cropRegex.exec(key)[3];
           let crop = cropRegex.exec(key)[4];
 
           if (!data.recentDate.day && rewards) {
