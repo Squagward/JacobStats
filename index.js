@@ -31,7 +31,7 @@ const container3 = new Elementa.UIContainer()
   .setHeight(new Elementa.RelativeConstraint())
   .addChildren(infoBox.background);
 
-const window = new Elementa.Window()
+new Elementa.Window()
   .addChildren(container, container2, container3);
 
 register("renderOverlay", () => {
@@ -170,7 +170,6 @@ register("renderOverlay", () => {
   };
 });
 
-let cleanUUID, name;
 register("guiKey", (char, keyCode) => {
   if (!home.gui.isOpen() && !tab.gui.isOpen()) return; // if both tabs are closed, do nothing
 
@@ -182,154 +181,157 @@ register("guiKey", (char, keyCode) => {
   }
 
   if (keyCode === 28) { // ENTER
-    const unformName = home.text;
+    if (!home.text) return;
     home.close();
-    tab.open();
-
-    tab.setTitle(`Loading data for ${unformName}`);
-    stepper.register();
-
-    let step = 0;
-    sendReq(`https://api.ashcon.app/mojang/v2/user/${unformName}`)
-      .then(({ uuid, username }) => {
-        name = username;
-        cleanUUID = uuidCleaner(uuid);
-        tab.setTitle(`Loading data for ${name}`);
-
-        step++;
-        return sendReq(`https://api.slothpixel.me/api/skyblock/profiles/${cleanUUID}`);
-      })
-      .then(profiles => {
-        let latest;
-        const recent = Object.values(profiles)
-          .map(p => p.last_save)
-          .reduce((a, b) => a > b ? a : b);
-
-        for ([key, val] of Object.entries(profiles))
-          if (val.last_save === recent)
-            latest = key;
-
-        step++;
-        return sendReq(`https://api.slothpixel.me/api/skyblock/profile/${cleanUUID}/${latest}`);
-      })
-      .then(({ members }) => {
-        const theProfile = members[cleanUUID];
-        const { contests, perks } = theProfile.jacob2; // no need to do this but I just wanted to test out destructuring
-        const totalContests = Object.entries(contests);
-
-        data.total = totalContests.length;
-        data.maxFarmingLvl += perks.farming_level_cap ?? 0;
-        data.anitaBonus = perks.double_drops ?? 0;
-        data.uniqueGolds = theProfile.jacob2.unique_golds2.length;
-
-        for (let i = 0; i < skillCurves.length; i++) {
-          if (!theProfile.skills.farming) {
-            data.farmingLvl = "§cAPI Disabled";
-            break;
-          }
-          if (theProfile.skills.farming.xp < skillCurves[i] || data.maxFarmingLvl < data.farmingLvl + 1) break;
-          else data.farmingLvl++;
-        }
-
-        for (let i = totalContests.length - 1; i >= 0; i--) {
-          let key = totalContests[i][0];
-          let value = totalContests[i][1];
-          let { claimed_rewards: rewards,
-            claimed_participants: players,
-            claimed_position: pos,
-            collected
-          } = value;
-
-          let sbYear = +cropRegex.exec(key)[1] + 1;
-          let sbMonth = sbCal[cropRegex.exec(key)[2]];
-          let sbDay = +cropRegex.exec(key)[3];
-          let crop = cropRegex.exec(key)[4];
-
-          if (!data.recentDate.day && rewards) {
-            data.recentDate = {
-              day: sbDay,
-              month: sbMonth,
-              year: sbYear
-            };
-
-            data.recentCrop = crop;
-            data.recentCropData = value;
-          }
-
-          data[crop].count++;
-
-          if (collected > data[crop].bestCount) data[crop].bestCount = collected;
-          if (pos < data[crop].bestPos) data[crop].bestPos = pos + 1;
-
-          let percent = pos / players;
-
-          if (percent <= 0.05) data.totalMedals.gold++;
-          else if (percent <= 0.25) data.totalMedals.silver++;
-          else if (percent <= 0.6) data.totalMedals.bronze++;
-        }
-
-        const allMedals = data.totalMedals.gold + data.totalMedals.silver + data.totalMedals.bronze;
-        data.totalMedals.none = totalContests.length - allMedals;
-
-        stepper.unregister();
-
-        tab.setLines(
-          `${name}'s Farming Stats`,
-          `§a§lContests Participated:`,
-          `${toNormal.WHEAT}§r: ${data.WHEAT.count}`,
-          `${toNormal.CARROT_ITEM}§r: ${data.CARROT_ITEM.count}`,
-          `${toNormal.POTATO_ITEM}§r: ${data.POTATO_ITEM.count}`,
-          `${toNormal.PUMPKIN}§r: ${data.PUMPKIN.count}`,
-          `${toNormal.MELON}§r: ${data.MELON.count}`,
-          `${toNormal.MUSHROOM_COLLECTION}§r: ${data.MUSHROOM_COLLECTION.count}`,
-          `${toNormal.CACTUS}§r: ${data.CACTUS.count}`,
-          `${toNormal.SUGAR_CANE}§r: ${data.SUGAR_CANE.count}`,
-          `${toNormal.NETHER_STALK}§r: ${data.NETHER_STALK.count}`,
-          `${toNormal.INK_SACK}§r: ${data.INK_SACK.count}`,
-          `§9Total§r: ${withCommas(data.total)}` // if someone hits 1000 that would be nuts
-        );
-        tab.updateTabSize();
-      })
-      .catch(e => {
-        print(`\nJacobStats Error:\n${JSON.stringify(e)}\n`);
-
-        stepper.unregister();
-
-        switch (step) {
-          case 0:
-            tab.setHeader(
-              `§cError loading Mojang data for ${unformName}`,
-              `${e.error} - ${e.reason}`
-            );
-            break;
-          case 1:
-            tab.setHeader(
-              `§cError loading all profiles data for ${name}`,
-              e.message ?? ""
-            );
-            break;
-          case 2:
-            tab.setHeader(
-              `§cError loading current profile data for ${name}`,
-              e.error ?? ""
-            );
-            break;
-        }
-
-        tab.updateTabSize();
-      });
+    getAPIData(home.text);
   }
 });
 
 register("command", name => {
-  home.open();
-  if (name) home.setText(name);
+  if (name) getAPIData(name);
+  if (!name) getAPIData(Player.getName());
 }).setName("jacob");
 
 const stepper = register("step", steps => {
   tab.setText(loadMsgs[steps % loadMsgs.length]);
 }).setFps(5);
 
+const getAPIData = n => {
+  let cleanUUID, name;
+
+  tab.open();
+
+  tab.setTitle(`Loading data for ${n}`);
+  stepper.register();
+
+  let step = 0;
+
+  sendReq(`https://api.ashcon.app/mojang/v2/user/${n}`)
+    .then(({ uuid, username }) => {
+      name = username;
+      cleanUUID = uuidCleaner(uuid);
+      tab.setTitle(`Loading data for ${name}`);
+
+      step++;
+      return sendReq(`https://api.slothpixel.me/api/skyblock/profiles/${cleanUUID}`);
+    })
+    .then(profiles => {
+      let latest;
+      const recent = Object.values(profiles)
+        .map(p => p.last_save)
+        .reduce((a, b) => a > b ? a : b);
+
+      for ([key, val] of Object.entries(profiles))
+        if (val.last_save === recent)
+          latest = key;
+
+      step++;
+      return sendReq(`https://api.slothpixel.me/api/skyblock/profile/${cleanUUID}/${latest}`);
+    })
+    .then(({ members }) => {
+      const theProfile = members[cleanUUID];
+      const { jacob2: { contests, perks } } = theProfile;
+      const totalContests = Object.entries(contests);
+
+      data.total = totalContests.length;
+      data.maxFarmingLvl += perks.farming_level_cap ?? 0;
+      data.anitaBonus = perks.double_drops ?? 0;
+      data.uniqueGolds = theProfile.jacob2.unique_golds2.length;
+
+      for (let level of skillCurves) {
+        if (!theProfile.skills.farming) {
+          data.farmingLvl = "§cAPI Disabled";
+          break;
+        }
+        if (
+          theProfile.skills.farming.xp < skillCurves[level] ||
+          data.maxFarmingLvl < data.farmingLvl + 1
+        ) break;
+        data.farmingLvl++;
+      }
+
+      for (let i = totalContests.length - 1; i >= 0; i--) {
+        let [key, value] = totalContests[i];
+        let {
+          claimed_rewards, claimed_participants,
+          claimed_position, collected
+        } = value;
+
+        let year = +cropRegex.exec(key)[1] + 1;
+        let month = sbCal[cropRegex.exec(key)[2]];
+        let day = +cropRegex.exec(key)[3];
+        let crop = cropRegex.exec(key)[4];
+
+        if (!data.recentDate.day && claimed_rewards) {
+          data.recentDate = { day, month, year };
+
+          data.recentCrop = crop;
+          data.recentCropData = value;
+        }
+
+        data[crop].count++;
+
+        if (collected > data[crop].bestCount) data[crop].bestCount = collected;
+        if (claimed_position < data[crop].bestPos) data[crop].bestPos = claimed_position + 1;
+
+        let percent = claimed_position / claimed_participants;
+
+        if (percent <= 0.05) data.totalMedals.gold++;
+        else if (percent <= 0.25) data.totalMedals.silver++;
+        else if (percent <= 0.6) data.totalMedals.bronze++;
+      }
+
+      const allMedals = data.totalMedals.gold + data.totalMedals.silver + data.totalMedals.bronze;
+      data.totalMedals.none = totalContests.length - allMedals;
+
+      stepper.unregister();
+
+      tab.setLines(
+        `${name}'s Farming Stats`,
+        `§a§lContests Participated:`,
+        `${toNormal.WHEAT}§r: ${data.WHEAT.count}`,
+        `${toNormal.CARROT_ITEM}§r: ${data.CARROT_ITEM.count}`,
+        `${toNormal.POTATO_ITEM}§r: ${data.POTATO_ITEM.count}`,
+        `${toNormal.PUMPKIN}§r: ${data.PUMPKIN.count}`,
+        `${toNormal.MELON}§r: ${data.MELON.count}`,
+        `${toNormal.MUSHROOM_COLLECTION}§r: ${data.MUSHROOM_COLLECTION.count}`,
+        `${toNormal.CACTUS}§r: ${data.CACTUS.count}`,
+        `${toNormal.SUGAR_CANE}§r: ${data.SUGAR_CANE.count}`,
+        `${toNormal.NETHER_STALK}§r: ${data.NETHER_STALK.count}`,
+        `${toNormal.INK_SACK}§r: ${data.INK_SACK.count}`,
+        `§9Total§r: ${withCommas(data.total)}` // if someone hits 1000 that would be nuts
+      );
+      tab.updateTabSize();
+    })
+    .catch(e => {
+      print(`\nJacobStats Error:\n${JSON.stringify(e)}\n`);
+
+      stepper.unregister();
+
+      switch (step) {
+        case 0:
+          tab.setHeader(
+            `§cError loading Mojang data for ${n}`,
+            `${e.error} - ${e.reason}`
+          );
+          break;
+        case 1:
+          tab.setHeader(
+            `§cError loading all profiles data for ${name}`,
+            e.message ?? ""
+          );
+          break;
+        case 2:
+          tab.setHeader(
+            `§cError loading current profile data for ${name}`,
+            e.error ?? ""
+          );
+          break;
+      }
+
+      tab.updateTabSize();
+    });
+};
 
 // Sample jacob2 Data
 /*{
