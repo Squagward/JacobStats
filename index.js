@@ -322,18 +322,27 @@ const getAPIData = n => {
 
       switch (step) {
         case 0:
+          if (e.reason.includes("No user with the name"))
+            e.reason = "No Minecraft account found";
+
           tab.setHeader(
             `§cError loading Mojang data for ${n}`,
             `${e.error} - ${e.reason}`
           );
           break;
         case 1:
+          if (e.message === "Reduce of empty array with no initial value")
+            e.message = "Player has no Skyblock profiles";
+
           tab.setHeader(
             `§cError loading all profiles data for ${name}`,
             e.message ?? ""
           );
           break;
         case 2:
+          if (e.error === "Cannot use 'in' operator to search for 'stats' in undefined")
+            e.error = "No data for profile in Slothpixel API";
+
           tab.setHeader(
             `§cError loading current profile data for ${name}`,
             e.error ?? ""
