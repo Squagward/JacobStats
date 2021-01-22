@@ -182,8 +182,9 @@ register("guiKey", (char, keyCode) => {
 
   if (keyCode === 28) { // ENTER
     if (!home.text) return;
+    const text = home.text;
     home.close();
-    getAPIData(home.text);
+    getAPIData(text);
   }
 });
 
@@ -198,7 +199,7 @@ const stepper = register("step", steps => {
 
 const getAPIData = n => {
   let cleanUUID, name;
-
+  home.close();
   tab.open();
 
   tab.setTitle(`Loading data for ${n}`);
@@ -230,21 +231,29 @@ const getAPIData = n => {
     })
     .then(({ members }) => {
       const theProfile = members[cleanUUID];
-      const { jacob2: { contests, perks } } = theProfile;
+      const {
+        jacob2: {
+          perks: {
+            double_drops, farming_level_cap
+          },
+          contests,
+          unique_golds2
+        }
+      } = theProfile;
       const totalContests = Object.entries(contests);
 
       data.total = totalContests.length;
-      data.maxFarmingLvl += perks.farming_level_cap ?? 0;
-      data.anitaBonus = perks.double_drops ?? 0;
-      data.uniqueGolds = theProfile.jacob2.unique_golds2.length;
+      data.maxFarmingLvl += farming_level_cap ?? 0;
+      data.anitaBonus = double_drops ?? 0;
+      data.uniqueGolds = unique_golds2.length;
 
-      for (let level of skillCurves) {
+      for (let i = 0; i < skillCurves.length; i++) {
         if (!theProfile.skills.farming) {
           data.farmingLvl = "§cAPI Disabled";
           break;
         }
         if (
-          theProfile.skills.farming.xp < skillCurves[level] ||
+          theProfile.skills.farming.xp < skillCurves[i] ||
           data.maxFarmingLvl < data.farmingLvl + 1
         ) break;
         data.farmingLvl++;
