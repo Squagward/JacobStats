@@ -234,7 +234,8 @@ const getAPIData = n => {
       const {
         jacob2: {
           perks: {
-            double_drops, farming_level_cap
+            double_drops,
+            farming_level_cap
           },
           contests,
           unique_golds2
@@ -245,7 +246,7 @@ const getAPIData = n => {
       data.total = totalContests.length;
       data.maxFarmingLvl += farming_level_cap ?? 0;
       data.anitaBonus = double_drops ?? 0;
-      data.uniqueGolds = unique_golds2.length;
+      data.uniqueGolds = unique_golds2?.length ?? 0;
 
       for (let i = 0; i < skillCurves.length; i++) {
         if (!theProfile.skills.farming) {
@@ -262,8 +263,10 @@ const getAPIData = n => {
       for (let i = totalContests.length - 1; i >= 0; i--) {
         let [key, value] = totalContests[i];
         let {
-          claimed_rewards, claimed_participants,
-          claimed_position, collected
+          collected,
+          claimed_rewards,
+          claimed_position,
+          claimed_participants
         } = value;
 
         let year = +cropRegex.exec(key)[1] + 1;
