@@ -1,16 +1,5 @@
-import request from "../requestV2/index";
 import numeral from "../numeraljs/index";
 import { data } from "./constants";
-
-export const sendReq = url => request({
-  url,
-  json: true,
-  connectTimeout: 10000,
-  readTimeout: 10000,
-  headers: {
-    "User-Agent": "Mozilla/5.0 (ChatTriggers)"
-  }
-});
 
 export const charToString = char => char + "";
 
@@ -44,7 +33,7 @@ export const resetData = () => {
 
 export const withCommas = x => numeral(x).format("0,0");
 
-export const percent = (top, bottom) => numeral(top / bottom).format("0.000%");
+export const percent = x => numeral(x).format("0.000%");
 
 export const toPosition = x => {
   const pos = numeral(x).format("0o");

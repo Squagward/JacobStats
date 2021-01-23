@@ -2,13 +2,10 @@
 /// <reference lib="es2015" />
 
 import * as Elementa from "../Elementa/index";
-import { Homepage, Tab, InfoBox } from "./homepage";
-import { sendReq, uuidCleaner, withCommas, toPosition, percent } from "./utils";
-import { data, cropRegex, skillCurves, toNormal, loadMsgs, sbCal } from "./constants";
-
-const home = new Homepage();
-const tab = new Tab();
-const infoBox = new InfoBox();
+import { withCommas, toPosition, percent } from "./utils";
+import { data, toNormal } from "./constants";
+import { home, tab, infoBox } from "./tabs";
+import { getNameData } from "./requestFns";
 
 const container = new Elementa.UIContainer()
   .setX(new Elementa.CenterConstraint())
@@ -38,7 +35,6 @@ register("renderOverlay", () => {
   if (home.gui.isOpen()) home.background.draw();
 
   if (!tab.gui.isOpen()) return;
-
   tab.background.draw();
 
   if (tab.background.children.length < 13) return;
@@ -67,7 +63,7 @@ register("renderOverlay", () => {
             `${data.recentDate.month} ${toPosition(data.recentDate.day).removeFormatting()}, Year ${data.recentDate.year}`,
             `Crop: ${toNormal[data.recentCrop]}`,
             data.recentCropData.claimed_position + 1
-              ? `Rank: ${toPosition(data.recentCropData.claimed_position + 1)} §r/ ${withCommas(data.recentCropData.claimed_participants)} (Top ${percent(data.recentCropData.claimed_position + 1, data.recentCropData.claimed_participants)})`
+              ? `Rank: ${toPosition(data.recentCropData.claimed_position + 1)} §r/ ${withCommas(data.recentCropData.claimed_participants)} (Top ${percent(data.recentCropData.claimed_position + 1 / data.recentCropData.claimed_participants)})`
               : "Rank: Not claimed or below Bronze!",
             `Collection: ${withCommas(data.recentCropData.collected)}`
           );
@@ -156,10 +152,10 @@ register("renderOverlay", () => {
         case 12:
           infoBox.setLines(
             "Total Medal §lEstimation§r:",
-            `§6Gold§r: ${withCommas(data.totalMedals.gold)} - ${percent(data.totalMedals.gold, data.total)}`,
-            `§7Silver§r: ${withCommas(data.totalMedals.silver)} - ${percent(data.totalMedals.silver, data.total)}`,
-            `§cBronze§r: ${withCommas(data.totalMedals.bronze)} - ${percent(data.totalMedals.bronze, data.total)}`,
-            `None: ${withCommas(data.totalMedals.none)} - ${percent(data.totalMedals.none, data.total)}`
+            `§6Gold§r: ${withCommas(data.totalMedals.gold)} - ${percent(data.totalMedals.gold / data.total)}`,
+            `§7Silver§r: ${withCommas(data.totalMedals.silver)} - ${percent(data.totalMedals.silver / data.total)}`,
+            `§cBronze§r: ${withCommas(data.totalMedals.bronze)} - ${percent(data.totalMedals.bronze / data.total)}`,
+            `None: ${withCommas(data.totalMedals.none)} - ${percent(data.totalMedals.none / data.total)}`
           );
           break;
       }
@@ -184,175 +180,14 @@ register("guiKey", (char, keyCode) => {
     if (!home.text) return;
     const text = home.text;
     home.close();
-    getAPIData(text);
+    getNameData(text);
   }
 });
 
 register("command", name => {
-  if (name) getAPIData(name);
-  if (!name) getAPIData(Player.getName());
+  if (name) getNameData(name);
+  if (!name) getNameData(Player.getName());
 }).setName("jacob");
-
-const stepper = register("step", steps => {
-  tab.setText(loadMsgs[steps % loadMsgs.length]);
-}).setFps(5);
-
-const getAPIData = n => {
-  let cleanUUID, name;
-  home.close();
-  tab.open();
-
-  tab.setTitle(`Loading data for ${n}`);
-  stepper.register();
-
-  let step = 0;
-
-  sendReq(`https://api.ashcon.app/mojang/v2/user/${n}`)
-    .then(({ uuid, username }) => {
-      name = username;
-      cleanUUID = uuidCleaner(uuid);
-      tab.setTitle(`Loading data for ${name}`);
-
-      step++;
-      return sendReq(`https://api.slothpixel.me/api/skyblock/profiles/${cleanUUID}`);
-    })
-    .then(profiles => {
-      let latest;
-      const recent = Object.values(profiles)
-        .map(p => p.last_save)
-        .reduce((a, b) => a > b ? a : b);
-
-      for ([key, val] of Object.entries(profiles))
-        if (val.last_save === recent)
-          latest = key;
-
-      step++;
-      return sendReq(`https://api.slothpixel.me/api/skyblock/profile/${cleanUUID}/${latest}`);
-    })
-    .then(({ members }) => {
-      const theProfile = members[cleanUUID];
-      const {
-        jacob2: {
-          perks: {
-            double_drops,
-            farming_level_cap
-          },
-          contests,
-          unique_golds2
-        }
-      } = theProfile;
-      const totalContests = Object.entries(contests);
-
-      data.total = totalContests.length;
-      data.maxFarmingLvl += farming_level_cap ?? 0;
-      data.anitaBonus = double_drops ?? 0;
-      data.uniqueGolds = unique_golds2?.length ?? 0;
-
-      for (let i = 0; i < skillCurves.length; i++) {
-        if (!theProfile.skills.farming) {
-          data.farmingLvl = "§cAPI Disabled";
-          break;
-        }
-        if (
-          theProfile.skills.farming.xp < skillCurves[i] ||
-          data.maxFarmingLvl < data.farmingLvl + 1
-        ) break;
-        data.farmingLvl++;
-      }
-
-      for (let i = totalContests.length - 1; i >= 0; i--) {
-        let [key, value] = totalContests[i];
-        let {
-          collected,
-          claimed_rewards,
-          claimed_position,
-          claimed_participants
-        } = value;
-
-        let year = +cropRegex.exec(key)[1] + 1;
-        let month = sbCal[cropRegex.exec(key)[2]];
-        let day = +cropRegex.exec(key)[3];
-        let crop = cropRegex.exec(key)[4];
-
-        if (!data.recentDate.day && claimed_rewards) {
-          data.recentDate = { day, month, year };
-
-          data.recentCrop = crop;
-          data.recentCropData = value;
-        }
-
-        data[crop].count++;
-
-        if (collected > data[crop].bestCount) data[crop].bestCount = collected;
-        if (claimed_position < data[crop].bestPos) data[crop].bestPos = claimed_position + 1;
-
-        let percent = claimed_position / claimed_participants;
-
-        if (percent <= 0.05) data.totalMedals.gold++;
-        else if (percent <= 0.25) data.totalMedals.silver++;
-        else if (percent <= 0.6) data.totalMedals.bronze++;
-      }
-
-      const allMedals = data.totalMedals.gold + data.totalMedals.silver + data.totalMedals.bronze;
-      data.totalMedals.none = totalContests.length - allMedals;
-
-      stepper.unregister();
-
-      tab.setLines(
-        `${name}'s Farming Stats`,
-        `§a§lContests Participated:`,
-        `${toNormal.WHEAT}§r: ${data.WHEAT.count}`,
-        `${toNormal.CARROT_ITEM}§r: ${data.CARROT_ITEM.count}`,
-        `${toNormal.POTATO_ITEM}§r: ${data.POTATO_ITEM.count}`,
-        `${toNormal.PUMPKIN}§r: ${data.PUMPKIN.count}`,
-        `${toNormal.MELON}§r: ${data.MELON.count}`,
-        `${toNormal.MUSHROOM_COLLECTION}§r: ${data.MUSHROOM_COLLECTION.count}`,
-        `${toNormal.CACTUS}§r: ${data.CACTUS.count}`,
-        `${toNormal.SUGAR_CANE}§r: ${data.SUGAR_CANE.count}`,
-        `${toNormal.NETHER_STALK}§r: ${data.NETHER_STALK.count}`,
-        `${toNormal.INK_SACK}§r: ${data.INK_SACK.count}`,
-        `§9Total§r: ${withCommas(data.total)}` // if someone hits 1000 that would be nuts
-      );
-      tab.updateTabSize();
-    })
-    .catch(e => {
-      print(`\nJacobStats Error:\n${JSON.stringify(e)}\n`);
-
-      stepper.unregister();
-
-      switch (step) {
-        case 0:
-          if (e.reason.includes("No user with the name"))
-            e.reason = "No Minecraft account found";
-
-          tab.setHeader(
-            `§cError loading Mojang data for ${n}`,
-            `${e.error} - ${e.reason}`
-          );
-          break;
-        case 1:
-          if (e.message === "Reduce of empty array with no initial value")
-            e.message = "Player has no Skyblock profiles";
-
-          tab.setHeader(
-            `§cError loading all profiles data for ${name}`,
-            e.message ?? ""
-          );
-          break;
-        case 2:
-          if (e.error === "Cannot use 'in' operator to search for 'stats' in undefined")
-            e.error = "No data for profile in Slothpixel API";
-
-          tab.setHeader(
-            `§cError loading current profile data for ${name}`,
-            e.error ?? ""
-          );
-          break;
-      }
-
-      tab.updateTabSize();
-    });
-};
 
 // Sample jacob2 Data
 /*{

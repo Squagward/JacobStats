@@ -1,5 +1,3 @@
-const Color = Java.type("java.awt.Color");
-
 export const data = {
   WHEAT: {
     count: 0,
@@ -71,7 +69,7 @@ export const data = {
   }
 };
 
-export const toNormal = {
+export const colorAdded = {
   WHEAT: "§eWheat",
   CARROT_ITEM: "§6Carrot",
   POTATO_ITEM: "§ePotato",
@@ -108,7 +106,7 @@ export const sbCal = {
   12: "Late Winter"
 };
 
-export const theColor = new Color(.5, .5, .5, .7);
+export const theColor = new java.awt.Color(.5, .5, .5, .7);
 
 export const cropRegex = /(\d+):(?:(\d{1,2})_(\d{1,2})):(\w+)/; // year=g1+1 month=g2 day=g3 g4=crop
 
