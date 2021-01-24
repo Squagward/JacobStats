@@ -110,10 +110,10 @@ export const getLatest = (cleanUUID, username, latest) => {
       for (let i = totalContests.length - 1; i >= 0; i--) {
         let [key, value] = totalContests[i];
         let {
-          collected,
-          claimed_rewards,
-          claimed_position,
-          claimed_participants
+          collected = 0,
+          claimed_rewards = false,
+          claimed_position = 0,
+          claimed_participants = 0
         } = value;
 
         let year = +cropRegex.exec(key)[1] + 1;
@@ -131,7 +131,7 @@ export const getLatest = (cleanUUID, username, latest) => {
         data[crop].count++;
 
         if (collected > data[crop].bestCount) data[crop].bestCount = collected;
-        if (claimed_position < data[crop].bestPos) data[crop].bestPos = claimed_position + 1;
+        if (claimed_position < (data[crop].bestPos ?? 1e6)) data[crop].bestPos = claimed_position + 1;
 
         let percent = claimed_position / claimed_participants;
 

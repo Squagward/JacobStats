@@ -8,7 +8,7 @@ export const uuidCleaner = uuid => uuid.replace(/-/g, "");
 export const resetData = () => {
   for (let crop in data) {
     data[crop].count = 0;
-    data[crop].bestPos = 9999;
+    data[crop].bestPos = null;
     data[crop].bestCount = 0;
   }
 
@@ -36,6 +36,8 @@ export const withCommas = x => numeral(x).format("0,0");
 export const percent = x => numeral(x).format("0.000%");
 
 export const toPosition = x => {
+  if (!x) return "N/A";
+
   const pos = numeral(x).format("0o");
   switch (pos) {
     case "1st":
