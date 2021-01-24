@@ -54,7 +54,7 @@ export class Homepage {
       this.text += charToString(char);
 
     if (keyCode === 14) // BACKSPACE
-      this.text = this.text.substr(0, this.text.length - 1);
+      this.text = this.text.substring(0, this.text.length - 1);
 
     this.nameText
       .setText(this.text)

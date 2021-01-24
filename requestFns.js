@@ -1,5 +1,5 @@
 import request from "../requestV2/index";
-import { sendReq, uuidCleaner, withCommas } from "./utils";
+import { uuidCleaner, withCommas } from "./utils";
 import { data, cropRegex, sbCal, colorAdded, skillCurves, loadMsgs } from "./constants";
 import { home, tab } from "./tabs";
 

@@ -3,7 +3,7 @@
 
 import * as Elementa from "../Elementa/index";
 import { withCommas, toPosition, percent } from "./utils";
-import { data, toNormal } from "./constants";
+import { data } from "./constants";
 import { home, tab, infoBox } from "./tabs";
 import { getNameData } from "./requestFns";
 
