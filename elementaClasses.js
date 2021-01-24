@@ -168,12 +168,12 @@ export class InfoBox extends Tab {
     this.shownGroup.forEach((comp, index) => {
       if (index === 0) {
         comp
-          .setX(new Elementa.CenterConstraint)
+          .setX(new Elementa.CenterConstraint())
           .setY((5).pixels());
       }
       else {
         comp
-          .setX(new Elementa.CenterConstraint)
+          .setX(new Elementa.CenterConstraint())
           .setY(new Elementa.SiblingConstraint(5));
       }
     });

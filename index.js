@@ -3,7 +3,7 @@
 
 import * as Elementa from "../Elementa/index";
 import { withCommas, toPosition, percent } from "./utils";
-import { data } from "./constants";
+import { data, colorAdded } from "./constants";
 import { home, tab, infoBox } from "./tabs";
 import { getNameData } from "./requestFns";
 
@@ -61,7 +61,7 @@ register("renderOverlay", () => {
             "Most Recent Event Info",
             "(Medaled & Claimed Rewards)",
             `${data.recentDate.month} ${toPosition(data.recentDate.day).removeFormatting()}, Year ${data.recentDate.year}`,
-            `Crop: ${toNormal[data.recentCrop]}`,
+            `Crop: ${colorAdded[data.recentCrop]}`,
             data.recentCropData.claimed_position + 1
               ? `Rank: ${toPosition(data.recentCropData.claimed_position + 1)} §r/ ${withCommas(data.recentCropData.claimed_participants)} (Top ${percent(data.recentCropData.claimed_position + 1 / data.recentCropData.claimed_participants)})`
               : "Rank: Not claimed or below Bronze!",
@@ -71,7 +71,7 @@ register("renderOverlay", () => {
 
         case 2:
           infoBox.setLines(
-            toNormal.WHEAT,
+            colorAdded.WHEAT,
             `Best Rank: ${toPosition(data.WHEAT.bestPos)}`,
             `Best Collection: ${withCommas(data.WHEAT.bestCount)}`
           );
@@ -79,7 +79,7 @@ register("renderOverlay", () => {
 
         case 3:
           infoBox.setLines(
-            toNormal.CARROT_ITEM,
+            colorAdded.CARROT_ITEM,
             `Best Rank: ${toPosition(data.CARROT_ITEM.bestPos)}`,
             `Best Collection: ${withCommas(data.CARROT_ITEM.bestCount)}`
           );
@@ -87,7 +87,7 @@ register("renderOverlay", () => {
 
         case 4:
           infoBox.setLines(
-            toNormal.POTATO_ITEM,
+            colorAdded.POTATO_ITEM,
             `Best Rank: ${toPosition(data.POTATO_ITEM.bestPos)}`,
             `Best Collection: ${withCommas(data.POTATO_ITEM.bestCount)}`
           );
@@ -95,7 +95,7 @@ register("renderOverlay", () => {
 
         case 5:
           infoBox.setLines(
-            toNormal.PUMPKIN,
+            colorAdded.PUMPKIN,
             `Best Rank: ${toPosition(data.PUMPKIN.bestPos)}`,
             `Best Collection: ${withCommas(data.PUMPKIN.bestCount)}`
           );
@@ -103,7 +103,7 @@ register("renderOverlay", () => {
 
         case 6:
           infoBox.setLines(
-            toNormal.MELON,
+            colorAdded.MELON,
             `Best Rank: ${toPosition(data.MELON.bestPos)}`,
             `Best Collection: ${withCommas(data.MELON.bestCount)}`
           );
@@ -111,7 +111,7 @@ register("renderOverlay", () => {
 
         case 7:
           infoBox.setLines(
-            toNormal.MUSHROOM_COLLECTION,
+            colorAdded.MUSHROOM_COLLECTION,
             `Best Rank: ${toPosition(data.MUSHROOM_COLLECTION.bestPos)}`,
             `Best Collection: ${withCommas(data.MUSHROOM_COLLECTION.bestCount)}`
           );
@@ -119,7 +119,7 @@ register("renderOverlay", () => {
 
         case 8:
           infoBox.setLines(
-            toNormal.CACTUS,
+            colorAdded.CACTUS,
             `Best Rank: ${toPosition(data.CACTUS.bestPos)}`,
             `Best Collection: ${withCommas(data.CACTUS.bestCount)}`
           );
@@ -127,7 +127,7 @@ register("renderOverlay", () => {
 
         case 9:
           infoBox.setLines(
-            toNormal.SUGAR_CANE,
+            colorAdded.SUGAR_CANE,
             `Best Rank: ${toPosition(data.SUGAR_CANE.bestPos)}`,
             `Best Collection: ${withCommas(data.SUGAR_CANE.bestCount)}`
           );
@@ -135,7 +135,7 @@ register("renderOverlay", () => {
 
         case 10:
           infoBox.setLines(
-            toNormal.NETHER_STALK,
+            colorAdded.NETHER_STALK,
             `Best Rank: ${toPosition(data.NETHER_STALK.bestPos)}`,
             `Best Collection: ${withCommas(data.NETHER_STALK.bestCount)}`
           );
@@ -143,7 +143,7 @@ register("renderOverlay", () => {
 
         case 11:
           infoBox.setLines(
-            toNormal.INK_SACK,
+            colorAdded.INK_SACK,
             `Best Rank: ${toPosition(data.INK_SACK.bestPos)}`,
             `Best Collection: ${withCommas(data.INK_SACK.bestCount)}`
           );
@@ -162,7 +162,7 @@ register("renderOverlay", () => {
     });
   }
   catch (e) {
-    return;
+    print(JSON.stringify(e));
   };
 });
 
