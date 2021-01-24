@@ -81,19 +81,19 @@ export const getLatest = (cleanUUID, username, latest) => {
       const {
         jacob2: {
           perks: {
-            double_drops,
-            farming_level_cap
-          },
-          contests,
-          unique_golds2
-        }
+            double_drops = 0,
+            farming_level_cap = 0
+          } = {},
+          contests = {},
+          unique_golds2 = []
+        } = {}
       } = theProfile;
       const totalContests = Object.entries(contests);
 
       data.total = totalContests.length;
-      data.maxFarmingLvl += farming_level_cap ?? 0;
-      data.anitaBonus = double_drops ?? 0;
-      data.uniqueGolds = unique_golds2?.length ?? 0;
+      data.maxFarmingLvl += farming_level_cap;
+      data.anitaBonus = double_drops;
+      data.uniqueGolds = unique_golds2.length;
 
       for (let i = 0; i < skillCurves.length; i++) {
         if (!theProfile.skills.farming) {

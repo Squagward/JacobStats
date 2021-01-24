@@ -40,8 +40,6 @@ register("renderOverlay", () => {
   if (tab.background.children.length < 13) return;
 
   try {
-    infoBox.updateSize();
-
     if (tab.shownGroup.some(line => line.isHovered())) infoBox.background.draw();
 
     tab.shownGroup.forEach((line, i) => {
@@ -159,6 +157,7 @@ register("renderOverlay", () => {
           );
           break;
       }
+      infoBox.updateSize();
     });
   }
   catch (e) {
