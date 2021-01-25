@@ -1,52 +1,52 @@
 export const data = {
   WHEAT: {
     count: 0,
-    bestPos: null,
+    bestPos: 9999,
     bestCount: 0
   },
   CARROT_ITEM: {
     count: 0,
-    bestPos: null,
+    bestPos: 9999,
     bestCount: 0
   },
   POTATO_ITEM: {
     count: 0,
-    bestPos: null,
+    bestPos: 9999,
     bestCount: 0
   },
   PUMPKIN: {
     count: 0,
-    bestPos: null,
+    bestPos: 9999,
     bestCount: 0
   },
   MELON: {
     count: 0,
-    bestPos: null,
+    bestPos: 9999,
     bestCount: 0
   },
   MUSHROOM_COLLECTION: {
     count: 0,
-    bestPos: null,
+    bestPos: 9999,
     bestCount: 0
   },
   CACTUS: {
     count: 0,
-    bestPos: null,
+    bestPos: 9999,
     bestCount: 0
   },
   SUGAR_CANE: {
     count: 0,
-    bestPos: null,
+    bestPos: 9999,
     bestCount: 0
   },
   NETHER_STALK: {
     count: 0,
-    bestPos: null,
+    bestPos: 9999,
     bestCount: 0
   },
   INK_SACK: {
     count: 0,
-    bestPos: null,
+    bestPos: 9999,
     bestCount: 0
   },
 

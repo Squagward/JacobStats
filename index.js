@@ -58,7 +58,9 @@ register("renderOverlay", () => {
           infoBox.setLines(
             "Most Recent Event Info",
             "(Medaled & Claimed Rewards)",
-            `${data.recentDate.month ?? "N/A"} ${toPosition(data.recentDate.day).removeFormatting()}, Year ${data.recentDate.year ?? "N/A"}`,
+            data.recentDate.day
+              ? `${data.recentDate.month} ${toPosition(data.recentDate.day).removeFormatting()}, Year ${data.recentDate.year}`
+              : "Date: N/A",
             `Crop: ${colorAdded[data.recentCrop] ?? "N/A"}`,
             data.recentCropData.claimed_position + 1
               ? `Rank: ${toPosition(data.recentCropData.claimed_position + 1)} §r/ ${withCommas(data.recentCropData.claimed_participants)} (Top ${percent(data.recentCropData.claimed_position + 1 / data.recentCropData.claimed_participants)})`

@@ -8,7 +8,7 @@ export const uuidCleaner = uuid => uuid.replace(/-/g, "");
 export const resetData = () => {
   for (let crop in data) {
     data[crop].count = 0;
-    data[crop].bestPos = null;
+    data[crop].bestPos = 9999;
     data[crop].bestCount = 0;
   }
 
