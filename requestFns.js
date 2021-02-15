@@ -114,7 +114,7 @@ export const getLatest = (cleanUUID, username) => {
 
       data[crop].count++;
 
-      if (collected > data[crop].bestCount) data[crop].bestCount = collected;
+      data[crop].bestCount = Math.max(data[crop].bestCount, collected);
       if (claimed_position < data[crop].bestPos) data[crop].bestPos = claimed_position + 1;
 
       let percent = claimed_position / claimed_participants;
